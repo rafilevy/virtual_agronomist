@@ -1,3 +1,31 @@
 .vscode/
 */node_modules
 */.db
+
+*.pyc
+.DS_Store
+.env
+*/settings/local.py
+*/staticfiles/*
+*/mediafiles/*
+__pycache__/
+/.vscode/
+
+
+# data
+*.dump
+
+# npm
+*/npm-debug.log
+
+# Webpack
+*/frontend/bundles/*
+*/frontend/webpack_bundles/*
+*/webpack-stats.json
+*/jquery-webpack-stats.json
+
+# Sass
+*/.sass-cache
+*.map
+
+
