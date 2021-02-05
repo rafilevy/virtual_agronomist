@@ -4,7 +4,6 @@
 
 *.pyc
 .DS_Store
-.env
 */settings/local.py
 */staticfiles/*
 */mediafiles/*
