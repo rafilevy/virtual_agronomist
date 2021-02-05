@@ -1,0 +1,1 @@
+{"status":"done","chunks":{"main":["vendors~main.js","main.js"]},"publicPath":"http://localhost:3000/frontend/bundles/","assets":{"main.js":{"name":"main.js","publicPath":"http://localhost:3000/frontend/bundles/main.js"},"vendors~main.js":{"name":"vendors~main.js","publicPath":"http://localhost:3000/frontend/bundles/vendors~main.js"}}}
