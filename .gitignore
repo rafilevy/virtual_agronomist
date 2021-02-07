@@ -20,7 +20,6 @@ __pycache__/
 # Webpack
 */frontend/bundles/*
 */frontend/webpack_bundles/*
-*/webpack-stats.json
 */jquery-webpack-stats.json
 
 # Sass
