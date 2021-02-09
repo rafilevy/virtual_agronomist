@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme)=> ({
     root: {
         width: "100%",
         height: "100%",
+        padding: "20px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly"
