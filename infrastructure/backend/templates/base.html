@@ -10,9 +10,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <link rel="shortcut icon" href="#" />
-
-        <!-- Webpack rendered CSS -->
-        {% render_bundle 'main' 'css' %}
     </head>
 
     <body>
@@ -20,13 +17,8 @@
         {% block body %}{% endblock %} {% csrf_token %}
         <script>
             const CSRFTOKEN = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const FORM_ERRORS={% autoescape off %}{{form.errors.as_json}}{% endautoescape %};
         </script>
-
-        <!-- Webpack rendered Javascript -->
-        {% if DEBUG %} {% render_bundle 'vendors~main' 'js' 'DEFAULT' %} {% endif %}
-
-        <!-- Main Webpack rendered Javascript -->
-        {% render_bundle 'main' 'js' 'DEFAULT' %}
 
         <!-- Extra rendered Javascript -->
         {% block scripts %}{% endblock %}

@@ -6,9 +6,11 @@ const __dirname = path.dirname(__filename);
 
 export default {
     context: __dirname,
-    entry: [
-        // defined in local or prod
-    ],
+    entry: {
+        main: ['react-hot-loader/patch', 'whatwg-fetch', './frontend/js/index.tsx'],
+        admin: ['react-hot-loader/patch', 'whatwg-fetch', './frontend/js/admin.tsx'],
+        login: ['react-hot-loader/patch', 'whatwg-fetch', './frontend/js/login.tsx'],
+    },
     output: {
         // defined in local or prod
     },
