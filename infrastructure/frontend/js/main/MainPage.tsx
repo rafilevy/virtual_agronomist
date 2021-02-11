@@ -2,7 +2,7 @@ import * as React from "react"
 import { Box, Button, Container, IconButton, makeStyles, Paper, TextareaAutosize, Typography } from "@material-ui/core"
 import SendIcon from "@material-ui/icons/Send"
 import ChatMessage from "./ChatMessage"
-import { message } from "../message/message";
+import { message } from "./message";
 import useWebSocket from 'react-use-websocket';
 
 const useStyles = makeStyles((theme)=> ({
@@ -49,7 +49,7 @@ const ws_scheme = window.location.protocol == 'https:' ? 'wss' : 'ws';
 const socketUrl = `${ws_scheme}://${location.host}/ws/chat/`;
 
 
-function App() {
+function MainPage() {
     const classes = useStyles();
     const { sendJsonMessage, lastMessage } = useWebSocket(socketUrl);
     const inputMessage = React.useMemo(() => {
@@ -121,4 +121,4 @@ function App() {
     )
 }
 
-export default App;
+export default MainPage;

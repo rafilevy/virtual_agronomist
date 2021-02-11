@@ -1,6 +1,6 @@
 import * as React from "react"
 import { makeStyles, Paper, Typography } from "@material-ui/core"
-import { message } from "../message/message"
+import { message } from "./message"
 
 const useStyles = makeStyles({
     container: {
