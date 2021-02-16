@@ -13,6 +13,18 @@ from haystack.reader.farm import FARMReader
 import haystack
 
 
+class ResponseRequiredException(Exception):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expression -- input expression in which the error occurred
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+
+
 class CustomRetriever(BaseRetriever):
     def retrieve(self, query, filters=None, top_k=10, index=None):
         super().retrieve(query, filters, top_k, index)
@@ -30,6 +42,9 @@ questions = {"timings": "Is there a specific timing that you would like to ask a
 
 class FurtherQuestionGenerator:
     outgoing_edges = 1
+
+    def __init__(self):
+        self.history = {}
 
     def individualFiltersGenerator(self, text):
         current_filters = {}
@@ -60,7 +75,11 @@ class FurtherQuestionGenerator:
         match = [0 for doc in docs]
         keyword = self.filters_difference(filters_list, specified)
         while keyword is not None:
-            new_key = input(questions[keyword] + " ")
+            new_key = None
+            if (questions[keyword] in self.history):
+                new_key = self.history[questions[keyword]]
+            else:
+                raise ResponseRequiredException(questions[keyword])
             match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (new_key.lower(
             ) in filters_list[i][keyword])) else match[i] for i in range(len(filters_list))]
             match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (filters_list[i][keyword] == [
@@ -69,7 +88,7 @@ class FurtherQuestionGenerator:
             keyword = self.filters_difference(filters_list, specified)
         return [x for _, x in sorted(zip(match, docs), key=lambda pair: pair[0], reverse=True)]
 
-    def run(self, **kwargs):
+    def run(self, *args, **kwargs):
         specified = list(self.individualFiltersGenerator(
             kwargs["query"]).keys())
         return (self.furtherQuestions(kwargs["documents"], specified), "output_1")
@@ -79,6 +98,7 @@ class MLPipeline:
     def __init__(self):
         self.pipeline = None
         self.document_store = None
+        self.question_generator = None
 
     def setup(self):
         print("SETTING UP PIPELINE")
@@ -103,8 +123,8 @@ class MLPipeline:
         print("PROCESSED AS4 DOCS")
         self.document_store = ElasticsearchDocumentStore(
             similarity="dot_product", host="elasticsearch", username="", password="", index="document")
-        # print("DELETED PREVIOUS DOCUMENTS")
-        # self.document_store.delete_all_documents(index='document')
+        print("DELETED PREVIOUS DOCUMENTS")
+        self.document_store.delete_all_documents(index='document')
         self.document_store.write_documents(as4Docs)
         print("WRITTEN DOCUMENT")
         es_retriever = ElasticsearchRetriever(
@@ -121,7 +141,7 @@ class MLPipeline:
         embedding_retriever = EmbeddingRetriever(document_store=self.document_store,
                                                  embedding_model="deepset/sentence_bert")
         custom_retriever = CustomRetriever()
-        # question_generator = FurtherQuestionGenerator()
+        self.question_generator = FurtherQuestionGenerator()
 
         self.document_store.update_embeddings(dpr_retriever)
 
@@ -136,15 +156,17 @@ class MLPipeline:
                                name="CustomRetriever", inputs=["Query"])
         self.pipeline.add_node(component=JoinDocuments(join_mode="merge"), name="JoinResults", inputs=[
             "ESRetriever", "DPRRetriever", "EmbeddingRetriever", "CustomRetriever"])
-        # self.pipeline.add_node(component=question_generator,
-        #                        name="QnGenerator", inputs=["JoinResults"])
+        self.pipeline.add_node(component=self.question_generator,
+                               name="QnGenerator", inputs=["JoinResults"])
 
-    def answer(self, question):
+    def answer(self, question, history={}):
         if self.pipeline is None:
             return ""
 
-        responses = self.pipeline.run(query=question, top_k_retriever=5)
-        return responses['documents'][0].text
+        self.question_generator.history = history
+        responses = self.pipeline.run(
+            query=question, top_k_retriever=5)
+        return responses[0].text
 
 
 shared_pipeline = MLPipeline()

@@ -29,5 +29,5 @@ ADD backend/ /home/user/app/backend
 RUN export DJANGO_SETTINGS_MODULE=agronomist.settings.production
 RUN mkdir /home/user/.cache
 # CMD gunicorn -w 2 agronomist.asgi:application -k uvicorn.workers.UvicornWorker --log-file - -b unix:/home/ap2138/backend/backend/web.sock
-CMD uvicorn --reload-dir /home/user/app/backend/chatapp --host 0.0.0.0 --port 8000 agronomist.asgi:application
+CMD uvicorn --reload --reload-dir chatapp --host 0.0.0.0 --port 8000 agronomist.asgi:application
 
