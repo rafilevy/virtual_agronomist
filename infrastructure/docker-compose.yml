@@ -8,7 +8,22 @@ services:
         image: 'postgres:alpine'
         volumes:
             - .db:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
         env_file: backend/.env
+
+    pgadmin:
+        image: 'dpage/pgadmin4:latest'
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+            PGADMIN_DEFAULT_PASSWORD: password
+            PGADMIN_LISTEN_PORT: '5000'
+        ports:
+            - 5000:5000
+        volumes:
+            - pgadmin:/var/lib/pgadmin
+        depends_on:
+            - postgres
 
     frontend:
         build:
@@ -40,3 +55,6 @@ services:
             - result
             - frontend
             - elasticsearch
+
+volumes:
+    pgadmin:
