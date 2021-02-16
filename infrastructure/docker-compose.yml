@@ -19,6 +19,13 @@ services:
         ports:
             - '3000:3000'
 
+    elasticsearch:
+        image: 'elasticsearch:7.6.2'
+        ports:
+            - 9200:9200
+        environment:
+            - discovery.type=single-node
+
     backend:
         build:
             dockerfile: backend/Dockerfile
@@ -27,7 +34,9 @@ services:
             - '8000:8000'
         volumes:
             - ./:/home/user/app/
+            - ../.cache:/root/.cache
         env_file: backend/.env
         depends_on:
             - result
             - frontend
+            - elasticsearch
