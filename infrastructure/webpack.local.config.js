@@ -12,8 +12,6 @@ const nodeModulesDir = path.resolve(__dirname, 'node_modules');
 
 baseConfig.mode = 'development';
 
-baseConfig.entry = ['react-hot-loader/patch', 'whatwg-fetch', './frontend/js/index.tsx'];
-
 baseConfig.optimization = {
     splitChunks: {
         chunks: 'all',

@@ -14,8 +14,6 @@ const nodeModulesDir = path.resolve(__dirname, 'node_modules');
 baseConfig.mode = 'production';
 baseConfig.devtool = 'source-map';
 
-baseConfig.entry = ['whatwg-fetch', './frontend/js/index.tsx'];
-
 baseConfig.optimization = {
     splitChunks: {
         chunks: 'all',
