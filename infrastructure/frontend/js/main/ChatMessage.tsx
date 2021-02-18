@@ -1,8 +1,8 @@
 import * as React from "react"
 import { IconButton, makeStyles, Paper, Typography } from "@material-ui/core"
 import { message } from "./message"
-import { ReportSharp } from "@material-ui/icons";
-import { red } from '@material-ui/core/colors';
+import { AssignmentTurnedIn, ReportSharp } from "@material-ui/icons";
+import { red, green } from '@material-ui/core/colors';
 
 const useStyles = makeStyles({
     container: {
@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function ChatMessage({msg, onReport, latest} : {msg: message, onReport?: () => void, latest: boolean}) {
+export default function ChatMessage({msg, onReport, onCheck, latest} : {msg: message, onReport?: () => void, onCheck?: () => void, latest: boolean}) {
     const classes = useStyles();
 
     return (
@@ -40,9 +40,13 @@ export default function ChatMessage({msg, onReport, latest} : {msg: message, onR
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    flexDirection: "column",
                 }}>
                     <IconButton aria-label="delete" onClick={() => onReport && onReport()}>
                         <ReportSharp style={{ color: red[500] }} />
+                    </IconButton>
+                    <IconButton aria-label="delete" onClick={() => onCheck && onCheck()} style={{ marginTop: 10 }}>
+                        <AssignmentTurnedIn style={{ color: green[500] }} />
                     </IconButton>
                 </div>)
             }

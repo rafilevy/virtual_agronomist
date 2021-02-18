@@ -51,6 +51,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=get_message(f"Question Reported", extra={"status": True}))
                 await self.send(text_data=get_message("", extra={"options": OPTIONS}))
                 return
+            elif (action == "correct"):
+                await self.send(text_data=get_message(f"Response Recorded as Correct", extra={"status": True}))
+                return
             elif (action == "answer"):
                 index = int(text_data_json['index'])
                 await self.send(text_data=get_message(f"Chosen answer: {OPTIONS[index]}", extra={"status": True}))

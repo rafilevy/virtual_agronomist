@@ -110,6 +110,10 @@ function MainPage() {
         }
     };
 
+    const sendCorrect = React.useCallback(() => {
+        sendJsonMessage({ action: "correct"});
+    }, [sendJsonMessage]);
+    
     const sendReport = React.useCallback(() => {
         sendJsonMessage({ action: "report"});
     }, [sendJsonMessage]);
@@ -126,7 +130,7 @@ function MainPage() {
                         const latest = i == messages.length - 1;
                         if (msg.options) return <MultiMessage key={i} msg={msg} onChosenOption={sendCorrectAnswer}></MultiMessage>;
                         else if (msg.status) return <StatusMessage key={i} msg={msg}></StatusMessage>;
-                        return <ChatMessage key={i} msg={msg} onReport={sendReport} latest={latest}></ChatMessage>;
+                        return <ChatMessage key={i} msg={msg} onReport={sendReport} onCheck={sendCorrect} latest={latest}></ChatMessage>;
                     })
                 }
             </Paper>
