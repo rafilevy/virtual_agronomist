@@ -4,6 +4,8 @@ import SendIcon from "@material-ui/icons/Send"
 import ChatMessage from "./ChatMessage"
 import { message } from "./message";
 import useWebSocket from 'react-use-websocket';
+import StatusMessage from "./StatusMessage";
+import MultiMessage from "./MultiMessage";
 
 const useStyles = makeStyles((theme)=> ({
     root: {
@@ -61,6 +63,7 @@ function MainPage() {
     
     const [messages, setMessages] = React.useState<message[]>([]);
     const [questionText, setQuestionText] = React.useState("");
+    const [lockInput, setLockInput] = React.useState(false);
 
     const messageContainer = React.useRef<HTMLDivElement>(null);
     const textArea = React.useRef<HTMLTextAreaElement>(null);
@@ -75,6 +78,8 @@ function MainPage() {
     React.useEffect(() => {
         if (inputMessage) {
             inputMessage['time'] = new Date(Date.parse(inputMessage['time']));
+            console.log(inputMessage);
+            setLockInput(false);
             setMessages([...messages, inputMessage]);
         }
     }, [inputMessage]);
@@ -87,6 +92,10 @@ function MainPage() {
     }
 
     const sendText = () => {
+        if (lockInput) {
+            setQuestionText("");
+            return;
+        }
         if (questionText) {
             const msg : message = {
                 from: false,
@@ -95,20 +104,30 @@ function MainPage() {
             };
             //SEND MESSAGE TO BACKEND
             sendJsonMessage(msg);
+            setLockInput(true);
             setQuestionText("");
             setMessages([...messages, msg]);
         }
     };
 
+    const sendReport = React.useCallback(() => {
+        sendJsonMessage({ action: "report"});
+    }, [sendJsonMessage]);
 
+    const sendCorrectAnswer = React.useCallback((i: number) => {
+        sendJsonMessage({ action: "answer", index: i});
+    }, [sendJsonMessage]);
 
     return (
         <Container maxWidth="md" className={classes.root}>
             <Paper ref={messageContainer} className={classes.messages}>
                 {
-                    messages.map((msg: message, i: number)=>(
-                        <ChatMessage key={i} msg={msg}></ChatMessage>
-                    ))
+                    messages.map((msg: message, i: number)=> {
+                        const latest = i == messages.length - 1;
+                        if (msg.options) return <MultiMessage key={i} msg={msg} onChosenOption={sendCorrectAnswer}></MultiMessage>;
+                        else if (msg.status) return <StatusMessage key={i} msg={msg}></StatusMessage>;
+                        return <ChatMessage key={i} msg={msg} onReport={sendReport} latest={latest}></ChatMessage>;
+                    })
                 }
             </Paper>
             <Paper className={classes.input}>
