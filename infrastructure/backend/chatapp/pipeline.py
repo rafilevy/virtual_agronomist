@@ -163,6 +163,7 @@ class MLPipeline:
         if self.pipeline is None:
             return ""
 
+        print(f"USING HISTORY: {history}")
         self.question_generator.history = history
         responses = self.pipeline.run(
             query=question, top_k_retriever=5)
