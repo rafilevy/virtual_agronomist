@@ -1,6 +1,7 @@
 import * as React from "react"
 import { AppBar, Box, Button, Container, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, makeStyles, Paper, TextareaAutosize, Toolbar, Typography, useTheme } from "@material-ui/core"
 import OverviewPage from "./subpages/OverviewPage";
+import HaystackAnnotation from "./subpages/HaystackAnnotation";
 import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
 import Brightness3 from "@material-ui/icons/Brightness3";
 
@@ -43,7 +44,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Performance", "Usage"] as const;
+    const pages = ["Overview", "Logs", "Performance", "Usage", "Annotation"] as const;
     const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
 
     return (
@@ -74,7 +75,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                 <Toolbar />
                 { 
                     currentPage === "Overview" && <OverviewPage /> 
-                    || currentPage === "Logs" && <Typography>LOGS</Typography>
+                    || currentPage === "Annotation" && <HaystackAnnotation />
                 }
             </main>
         </div>
