@@ -9,6 +9,8 @@
 */mediafiles/*
 __pycache__/
 /.vscode/
+.cache/
+*/backend/mlruns
 
 
 # data

@@ -1,1 +1,36 @@
-{"status":"done","publicPath":"http://localhost:3000/frontend/bundles/","chunks":{"main":[{"name":"main.js","publicPath":"http://localhost:3000/frontend/bundles/main.js","path":"/app/frontend/bundles/main.js"}],"vendors~main":[{"name":"vendors~main.js","publicPath":"http://localhost:3000/frontend/bundles/vendors~main.js","path":"/app/frontend/bundles/vendors~main.js"}]}}
+{
+    "status":"done",
+    "publicPath":"http://localhost:3000/frontend/bundles/",
+    "chunks":{
+       "main":[
+        {
+            "name":"main.js",
+            "publicPath":"http://localhost:3000/frontend/bundles/main.js"
+         },
+        {
+            "name":"vendors~main.js",
+            "publicPath":"http://localhost:3000/frontend/bundles/vendors~main.js"
+         }
+       ],
+       "admin":[
+        {
+            "name":"admin.js",
+            "publicPath":"http://localhost:3000/frontend/bundles/admin.js"
+         },
+        {
+            "name":"vendors~main.js",
+            "publicPath":"http://localhost:3000/frontend/bundles/vendors~main.js"
+         }
+       ],
+       "login":[
+         {
+             "name":"login.js",
+             "publicPath":"http://localhost:3000/frontend/bundles/login.js"
+          },
+         {
+             "name":"vendors~main.js",
+             "publicPath":"http://localhost:3000/frontend/bundles/vendors~main.js"
+          }
+        ]
+    }
+ }
