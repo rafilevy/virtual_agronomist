@@ -33,7 +33,7 @@ class CustomRetriever(BaseRetriever):
 
 
 filters_dictionary = {"timings": ["t0", "t1", "t2", "t3"],
-                      "fungus": ["ramularia", "rellow rust"],
+                      "fungus": ["ramularia", "yellow rust"],
                       "areas": ["east", "north", "southeast", "west", "south", "southwest"]}
 questions = {"timings": "Is there a specific timing that you would like to ask about? (E.g. T0, T1, etc)",
              "fungus": "Is there a fungi type that you would want to know about specifically?",
