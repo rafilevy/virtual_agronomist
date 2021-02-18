@@ -65,6 +65,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 answer = shared_pipeline.answer(response)
             await self.send(text_data=get_message(answer, extra={"canReport": True}))
             self.history = {}
+            self.furtherQuestion = None
         except ResponseRequiredException as e:
             self.furtherQuestion = e.message
             await self.send(text_data=get_message(self.furtherQuestion))
