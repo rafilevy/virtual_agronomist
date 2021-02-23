@@ -62,4 +62,9 @@ baseConfig.resolve.alias = {
     'react-dom': '@hot-loader/react-dom',
 };
 
+baseConfig.devServer = {
+    contentBase: path.resolve(__dirname, "frontend", "dev"),
+    hot: true
+}
+
 export default baseConfig;

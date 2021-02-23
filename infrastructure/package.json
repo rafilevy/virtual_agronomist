@@ -23,7 +23,8 @@
     "start": "babel-node server.js",
     "build": "NODE_ENV=production webpack --mode production --progress --color --config webpack.prod.config.js --bail",
     "lint": "eslint frontend",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "dev": ""
   },
   "dependencies": {
     "@babel/cli": "~7.12.10",
@@ -34,10 +35,12 @@
     "@material-ui/icons": "^4.11.2",
     "@types/react": "~17.0.0",
     "autoprefixer": "~10.2.1",
+    "chart.js": "^2.9.4",
     "node-sass": "~5.0.0",
     "postcss": "~8.2.3",
     "prop-types": "~15.7.2",
     "react": "~17.0.1",
+    "react-chartjs-2": "^2.11.1",
     "react-dom": "~17.0.1",
     "react-hot-loader": "~4.13.0",
     "react-query": "^3.5.11",
@@ -52,6 +55,7 @@
     "@babel/core": "~7.12.10",
     "@babel/node": "~7.12.10",
     "@hot-loader/react-dom": "^17.0.1",
+    "@types/chart.js": "^2.9.30",
     "@types/react-dom": "^17.0.0",
     "ajv": "~7.0.3",
     "babel-core": "~7.0.0-bridge.0",
