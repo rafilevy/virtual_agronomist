@@ -149,6 +149,10 @@ class MLPipeline:
         print("PROCESSED AS4 DOCS")
         self.document_store = ElasticsearchDocumentStore(
             similarity="dot_product", host="elasticsearch", username="", password="", index="document")
+        # self.document_store = FAISSDocumentStore(
+        #     faiss_index_factory_str="Flat",
+        #     sql_url=f"postgresql://{config('POSTGRES_USER')}:{config('POSTGRES_PASSWORD')}@{config('POSTGRES_HOST')}:{config('POSTGRES_PORT')}/faiss"
+        # )
         print("DELETED PREVIOUS DOCUMENTS")
         self.document_store.delete_all_documents(index='document')
         self.document_store.write_documents(as4Docs)
