@@ -1,0 +1,113 @@
+[{
+      "question": "asdfa",
+      "answers": [
+            "A three-spray programme for winter barley allows chlorothalonil (CTL) to be used with the latter two sprays, (so no requirement at T1) but if employing a two-spray programme (or three-sprays at T0, T1 and T2) then it would be wise to include chlorothalonil (CTL) at T1."
+      ],
+      "positive_ctxs": [
+            {
+                  "title": "winterBarley.txt",
+                  "text": "A three-spray programme for winter barley allows chlorothalonil (CTL) to be used with the latter two sprays, (so no requirement at T1) but if employing a two-spray programme (or three-sprays at T0, T1 and T2) then it would be wise to include chlorothalonil (CTL) at T1.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "7c09918d-8436-4228-8d86-7aa74d191cab"
+            }
+      ],
+      "negative_ctxs": [],
+      "hard_negative_ctxs": [
+            {
+                  "title": "winterBarley.txt",
+                  "text": "Three-spray programmes are recommended for winter barley due to its response to T3 fungicides and the rise in severity of late season ramularia. As such T1 and T2 can be applied slightly earlier if required to better match up with PGR timings.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "1f3fc1c1-e430-4b87-ab1d-99424afe99b5"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "Although a three-spray programme is suggested for winter barley, a traditional two-spray approach will still give effective disease control but please note: T0 fungicides are more likely to be needed chlorothalonil (CTL) should be included at T1 if the second treatment is not applied until GS49. In all cases add a morpholine to the T0 if mildew is actively developing or if rusts are present requiring rapid knockdown (e.g. Corbel 0.3 l/ha).",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "c6a65ca5-4dfd-4b0a-9e33-381995e6dbd9"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "For winter barley, in high disease pressure seasons (mild wet early spring) T0 sprays have been necessary. Although earlier timings in a T1/T2/T3 programme should remove the need for separate T0 treatment.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "47007a58-5f5f-4434-a651-06c3f5f22a27"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "For winter barley, the justification for high doses at T2 (GS37-39) is difficult to prove as cost effective, the inclusion of a third spray further decreases the need for higher doses of product, in NIAB TAG trials; however brown rust susceptibility and early T2 applications may require higher doses.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "b3a33e58-6ae6-49d6-9eb2-32aa406d585f"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "Although a three-spray programme is suggested for winter barley, a traditional two-spray approach will still give effective disease control but please note: T0 fungicides are more likely to be needed chlorothalonil (CTL) should be included at T1 if the second treatment is not applied until GS49. In all cases add a morpholine to the T0 if mildew is actively developing or if rusts are present requiring rapid knockdown (e.g. Corbel 0.3 l/ha).",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "c6a65ca5-4dfd-4b0a-9e33-381995e6dbd9"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "Although a three-spray programme is suggested for winter barley, a traditional two-spray approach will still give effective disease control but please note: T0 fungicides are more likely to be needed chlorothalonil (CTL) should be included at T1 if the second treatment is not applied until GS49. In all cases add a morpholine to the T0 if mildew is actively developing or if rusts are present requiring rapid knockdown (e.g. Corbel 0.3 l/ha).",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "c6a65ca5-4dfd-4b0a-9e33-381995e6dbd9"
+            }
+      ]
+},
+{
+      "question": "ask;fjasdkf",
+      "answers": [
+            "Although a three-spray programme is suggested for winter barley, a traditional two-spray approach will still give effective disease control but please note: T0 fungicides are more likely to be needed chlorothalonil (CTL) should be included at T1 if the second treatment is not applied until GS49. In all cases add a morpholine to the T0 if mildew is actively developing or if rusts are present requiring rapid knockdown (e.g. Corbel 0.3 l/ha)."
+      ],
+      "positive_ctxs": [
+            {
+                  "title": "winterBarley.txt",
+                  "text": "Although a three-spray programme is suggested for winter barley, a traditional two-spray approach will still give effective disease control but please note: T0 fungicides are more likely to be needed chlorothalonil (CTL) should be included at T1 if the second treatment is not applied until GS49. In all cases add a morpholine to the T0 if mildew is actively developing or if rusts are present requiring rapid knockdown (e.g. Corbel 0.3 l/ha).",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "c6a65ca5-4dfd-4b0a-9e33-381995e6dbd9"
+            }
+      ],
+      "negative_ctxs": [],
+      "hard_negative_ctxs": [
+            {
+                  "title": "winterBarley.txt",
+                  "text": "For winter barley, timing for T1 (GS30-31) is important due to more GAI on lower than on upper leaves. The slightly earlier timing will allow better pairing with an early growth regulator and reduce the need for a T0 treatment.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "9a184eeb-5feb-469f-bfd4-bbeb4464e68b"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "For winter barley, in high disease pressure seasons (mild wet early spring) T0 sprays have been necessary. Although earlier timings in a T1/T2/T3 programme should remove the need for separate T0 treatment.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "47007a58-5f5f-4434-a651-06c3f5f22a27"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "Three-spray programmes are recommended for winter barley due to its response to T3 fungicides and the rise in severity of late season ramularia. As such T1 and T2 can be applied slightly earlier if required to better match up with PGR timings.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "1f3fc1c1-e430-4b87-ab1d-99424afe99b5"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "For winter barley, only minimal input is needed for T3 (GS49-59) applications (to top up earlier treatments and provide a vehicle for a second CTL application). Application options are:\nProline 0.25 l/ha\nBumper 0.25 l/ha\nFandango 0.5 l/ha (Only two strobilurin applications permitted per crop)\nPriaxor 0.75 l/ha (Only two strobilurin applications permitted per crop)\nIn all cases add chlorothalonil (500 g/ha).",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "9c7c509e-20a6-4b6a-82c3-cfb9e4ded007"
+            },
+            {
+                  "title": "winterBarley.txt",
+                  "text": "A three-spray programme for winter barley allows chlorothalonil (CTL) to be used with the latter two sprays, (so no requirement at T1) but if employing a two-spray programme (or three-sprays at T0, T1 and T2) then it would be wise to include chlorothalonil (CTL) at T1.",
+                  "score": null,
+                  "title_score": null,
+                  "passage_id": "7c09918d-8436-4228-8d86-7aa74d191cab"
+            }
+      ]
+}]

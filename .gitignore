@@ -29,3 +29,8 @@ __pycache__/
 *.map
 
 
+*/backend/training/mlruns/
+*/backend/training/data/mlruns/
+*/backend/training/saved_models/
+*/backend/training/data/trainingSets/generated/
+

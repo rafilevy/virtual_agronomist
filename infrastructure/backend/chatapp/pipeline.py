@@ -1,5 +1,6 @@
 import os
 from subprocess import Popen, PIPE, STDOUT
+from threading import RLock
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack import Pipeline
 from haystack.pipeline import JoinDocuments
@@ -11,6 +12,7 @@ from haystack.preprocessor.cleaning import clean_wiki_text
 from haystack.preprocessor.utils import convert_files_to_dicts, fetch_archive_from_http
 from haystack.reader.farm import FARMReader
 import haystack
+from training.TrainingManager import DPRTrainingManager
 
 
 class ResponseRequiredException(Exception):
@@ -94,6 +96,22 @@ class FurtherQuestionGenerator:
         return (self.furtherQuestions(kwargs["documents"], specified), "output_1")
 
 
+class ContinualDPRNode:
+    def __init__(self, retriever, document_store):
+        self.retriever = retriever
+        self.document_store = document_store
+        self.lock = threading.RLock()
+
+    def update_retriever(self, retriever):
+        with self.lock:
+            self.document_store.update_embeddings(self.retreiver)
+            self.retriever = retriever
+
+    def run(self, *args, **kwargs):
+        with self.lock:
+            return self.retriever.run(*args, **kwargs)
+
+
 class MLPipeline:
     def __init__(self):
         self.pipeline = None
@@ -129,26 +147,19 @@ class MLPipeline:
         print("WRITTEN DOCUMENT")
         es_retriever = ElasticsearchRetriever(
             document_store=self.document_store)
-        dpr_retriever = DensePassageRetriever(document_store=self.document_store,
-                                              query_embedding_model="facebook/dpr-question_encoder-single-nq-base",
-                                              passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
-                                              max_seq_len_query=64,
-                                              max_seq_len_passage=256,
-                                              batch_size=16,
-                                              use_gpu=True,
-                                              embed_title=True,
-                                              use_fast_tokenizers=True)
+        dpr_retriever = DPRTrainingManager.get_current_retriever(
+            self.document_store)
         embedding_retriever = EmbeddingRetriever(document_store=self.document_store,
                                                  embedding_model="deepset/sentence_bert")
         custom_retriever = CustomRetriever()
         self.question_generator = FurtherQuestionGenerator()
-
         self.document_store.update_embeddings(dpr_retriever)
+        self.dpr_node = ContinualDPRNode(dpr_retriever, self.document_store)
 
         self.pipeline = Pipeline()
         self.pipeline.add_node(component=es_retriever,
                                name="ESRetriever", inputs=["Query"])
-        self.pipeline.add_node(component=dpr_retriever,
+        self.pipeline.add_node(component=self.dpr_node,
                                name="DPRRetriever", inputs=["Query"])
         self.pipeline.add_node(component=embedding_retriever,
                                name="EmbeddingRetriever", inputs=["Query"])
