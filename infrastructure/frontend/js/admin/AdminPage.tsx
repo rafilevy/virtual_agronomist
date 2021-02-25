@@ -7,6 +7,7 @@ import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
 import Brightness3 from "@material-ui/icons/Brightness3";
 import LogDownloadPage from "./subpages/LogDownloadPage";
 import TrainingPage from "./subpages/TrainingPage";
+import { ExitToAppRounded } from "@material-ui/icons";
 
 
 const drawerWidth = 240;
@@ -67,6 +68,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                     <IconButton onClick={()=>toggleTheme()}>
                         {theme.palette.type == "dark" ? <BrightnessHigh /> : <Brightness3 />}
                     </IconButton>
+                    <IconButton href={`/accounts/logout?next=${window.location.pathname}`}><ExitToAppRounded /></IconButton>
                 </Toolbar>
             </AppBar>
             <Drawer className={classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>

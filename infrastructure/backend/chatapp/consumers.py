@@ -1,11 +1,13 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 from datetime import datetime
 from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 import asyncio
 
 from .pipeline import shared_pipeline, ResponseRequiredException
+from .models import PreTrainingData
 
 
 def get_message(text, extra={}):
@@ -51,9 +53,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return
             elif (action == "answer"):
                 index = int(text_data_json['index'])
-                curr_in_train = shared_pipeline.processTrainingAction(
+                data = shared_pipeline.processTrainingAction(
                     self.question, index)
-                await self.send(text_data=get_message(f"Current # in training set {curr_in_train}", extra={"status": True}))
+                if data is not None:
+                    await database_sync_to_async(PreTrainingData.objects.create)(**data)
+                    await self.send(text_data=get_message(f"Added to pre-screened training data", extra={"status": True}))
+                else:
+                    await self.send(text_data=get_message(f"Ignoring...", extra={"status": True}))
                 return
 
             response = text_data_json['text']

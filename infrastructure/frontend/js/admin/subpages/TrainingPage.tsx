@@ -53,34 +53,43 @@ export default function TrainingPage(props: TrainingPageProps) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const [feedbackQuestions, setFeedbackQuestions] = React.useState<feedbackQuestion[]>([
-        {
-            question: "What do you winter barley",
-            options: ["1","2","3","4","5","6"],
-            choice: 3,
-            key: 12302343
-        }
-    ]);
+    const [feedbackQuestions, setFeedbackQuestions] = React.useState<feedbackQuestion[]>([]);
+    const [trainingSetRound, setTrainingSetRound] = React.useState<number>();
+    const [trainingSetCount, setTrainingSetCount] = React.useState<number>();
+    const [isTraining, setIsTraining] = React.useState<boolean>();
+
+
+    const trainerHelper = async (url: string, extra={}) => {
+        const result : {count: number, round: number, training: boolean} = await (await fetch(`http://localhost:8000/${url}/`, extra)).json();
+        console.log(result);
+        setTrainingSetCount(result["count"]);
+        setTrainingSetRound(result["round"]);
+        setIsTraining(result["training"]);
+    };
 
     React.useEffect(()=> {
         const fetchQuestions = async () => {
-            const result : feedbackQuestion[] = await (await fetch("localhost:8000/feedback")).json();
-            setFeedbackQuestions(result);
+            const result : {data: feedbackQuestion[]} = await (await fetch("http://localhost:8000/feedback/")).json();
+            setFeedbackQuestions(result["data"]);
         };
         fetchQuestions()
     }, [feedbackQuestions.length===0]);
+    
+    React.useEffect(()=> {
+        trainerHelper("train");
+    }, []);
 
     const deleteFeedbackQuestion = async (key: number) => {
-        fetch("localhost:8000/delete", {
+        trainerHelper("feedback", {
             method: "DELETE",
-            body: key.toString(),
+            body: key.toString()
         });
         setFeedbackQuestions(feedbackQuestions.slice(1, feedbackQuestions.length));
     }
 
     const submitFeedbackQuestion = async (key: number, choice: number) => {
         const body = JSON.stringify({key, choice});
-        fetch("localhost:8000/reply", {
+        trainerHelper("feedback", {
             method: "POST",
             body: body,
             headers: [["Content-Type", "application/json"]]
@@ -90,7 +99,7 @@ export default function TrainingPage(props: TrainingPageProps) {
 
     const [commitDialogueOpen, setCommitDialogueOpen] = React.useState(false);
     const handleTrainingCommit = () => {
-        fetch("localhost:8000/retrain", {
+        trainerHelper("train", {
             method: "POST"
         });
         setCommitDialogueOpen(false);
@@ -147,19 +156,23 @@ export default function TrainingPage(props: TrainingPageProps) {
                         }
                     </Paper>
                 </Grid>
-                <Grid item xl className={classes.section}>
-                    <Typography variant="h2">
-                        Commit training
+                {isTraining ? <Grid item xl className={classes.section}>
+                <Typography variant="h5">
+                        training...
+                    </Typography>
+                </Grid> : <Grid item xl className={classes.section}>
+                    <Typography variant="h3">
+                        Commit training round: {trainingSetRound}
                     </Typography>
                     <Divider />
                     <Box mt="5px">
                         <Button variant="contained" color="secondary"
                             onClick={()=>setCommitDialogueOpen(true)}
                         >
-                            Commit
+                            Commit Set (#{trainingSetCount})
                         </Button>
                     </Box>
-                </Grid>
+                </Grid>}
             </Grid>
             <div>
                 <Dialog
