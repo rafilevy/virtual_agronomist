@@ -1,6 +1,7 @@
 import * as React from "react"
 import { AppBar, Box, Button, Container, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, makeStyles, Paper, TextareaAutosize, Toolbar, Typography, useTheme } from "@material-ui/core"
 import OverviewPage from "./subpages/OverviewPage";
+import UsagePage from "./subpages/UsagePage";
 import HaystackAnnotation from "./subpages/HaystackAnnotation";
 import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
 import Brightness3 from "@material-ui/icons/Brightness3";
@@ -44,8 +45,15 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Performance", "Usage", "Annotation"] as const;
+    const pages = ["Overview", "Logs", "Usage", "Questions", "Annotation"] as const;
     const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
+
+
+    const testQueries = [];
+    const date = Date.now();
+    for (let i = 0; i<10_000; i++) {
+        testQueries.push(date - (i*1000*60*60) + (((Math.random()*2)-1)*12000*60*60))
+    }
 
     return (
         <div className={classes.root}>
@@ -74,7 +82,9 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
             <main className={classes.content}>
                 <Toolbar />
                 { 
-                    currentPage === "Overview" && <OverviewPage /> 
+                    currentPage === "Overview" && <OverviewPage />
+                    || currentPage === "Usage" && <UsagePage queries={testQueries}/>
+                    // || currentPage === "Questions" && <QuestionInsightPage />
                     || currentPage === "Annotation" && <HaystackAnnotation />
                 }
             </main>
