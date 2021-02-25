@@ -3,18 +3,19 @@ from haystack.document_store.faiss import FAISSDocumentStore
 from haystack.file_converter.txt import TextConverter
 from haystack.preprocessor.preprocessor import PreProcessor
 from haystack.retriever.dense import DensePassageRetriever
-from DPRTrainingSet import DPRTrainingSet
-from TrainingManager import DPRTrainingManager
+from training.DPRTrainingSet import DPRTrainingSet
+from training.TrainingManager import DPRTrainingManager
+
 
 class ManagerTester:
     """
     To run with a seperate postgres database
     """
-        # docker run  -p 5432:5432 -e POSTGRES_PASSWORD=haystack -d postgres
-        # document_store = FAISSDocumentStore(
-        #     faiss_index_factory_str="Flat",
-        #     sql_url="postgresql://postgres:haystack@localhost:5432"
-        # )
+    # docker run  -p 5432:5432 -e POSTGRES_PASSWORD=haystack -d postgres
+    # document_store = FAISSDocumentStore(
+    #     faiss_index_factory_str="Flat",
+    #     sql_url="postgresql://postgres:haystack@localhost:5432"
+    # )
 
     """
     To run with an in memory sqlite database
@@ -37,10 +38,10 @@ class ManagerTester:
     )
 
     # Loads the test document into the document store
-    def loadDocumentsFromFile(self,knowledgeFilePath):
+    def loadDocumentsFromFile(self, knowledgeFilePath):
         converter = TextConverter(
-                    remove_numeric_tables=False,
-                    valid_languages = ["en"])
+            remove_numeric_tables=False,
+            valid_languages=["en"])
         processor = PreProcessor(
             clean_empty_lines=True,
             clean_whitespace=True,
@@ -52,11 +53,11 @@ class ManagerTester:
         )
         loadedFile = converter.convert(knowledgeFilePath)
         documents = processor.process(loadedFile)
-        for i in range(0,len(documents)):
+        for i in range(0, len(documents)):
             docMetadata = documents[i]['meta']
-            docMetadata['name']=knowledgeFilePath;
-            docMetadata['doucmentID']= knowledgeFilePath \
-                                    +str(docMetadata['_split_id'])
+            docMetadata['name'] = knowledgeFilePath
+            docMetadata['doucmentID'] = knowledgeFilePath \
+                + str(docMetadata['_split_id'])
 
         self.document_store.write_documents(documents)
         backagain = self.document_store.get_all_documents()
@@ -67,7 +68,7 @@ class ManagerTester:
         #     print(backagain[i])
         #     print("---------------")
 
-        print("Number of documents loaded", end = ": ")
+        print("Number of documents loaded", end=": ")
         print(self.document_store.get_document_count())
 
     def __init__(self, knowledgeFilePath):
@@ -82,19 +83,19 @@ class ManagerTester:
         print("Performing initial embeddings update")
         self.document_store.update_embeddings(self.retreiver)
 
-        self.trainingManager = DPRTrainingManager(self.document_store,0)
+        self.trainingManager = DPRTrainingManager(self.document_store, 0)
 
     # return document store's id for the response marked correct
-    def get_correct_id(self, responses,correctNum):
+    def get_correct_id(self, responses, correctNum):
         # correctRespons = responses[correctNum].to_dict()
-        return responses[correctNum].id;
+        return responses[correctNum].id
 
     # return list of document store ids for alternative responses
     def get_incorrect_ids(self, responses, correctNum):
         ids = []
-        for i in range(0,len(responses)):
+        for i in range(0, len(responses)):
             if i == correctNum:
-                 continue
+                continue
             ids.append(responses[i].id)
         return ids
 
@@ -102,7 +103,7 @@ class ManagerTester:
         print("------------------------------")
         question = input("Enter new question (T to run training): ")
 
-        if question=='T':
+        if question == 'T':
             self.train()
             return
 
@@ -110,7 +111,7 @@ class ManagerTester:
         responses = self.retreiver.retrieve(question, top_k=k)
 
         print()
-        for i in range(0,k):
+        for i in range(0, k):
             print(i, end=": ")
             print(responses[i].text)
             print()
@@ -118,7 +119,7 @@ class ManagerTester:
         print()
         correctNum = input("Select correct response (X if none correct): ")
 
-        if correctNum=='X':
+        if correctNum == 'X':
             return
 
         print()
@@ -129,7 +130,6 @@ class ManagerTester:
             posID=self.get_correct_id(responses, int(correctNum)),
             negIDs=self.get_incorrect_ids(responses, int(correctNum))
         )
-
 
     def train(self):
 

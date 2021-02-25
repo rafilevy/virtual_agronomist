@@ -17,15 +17,6 @@ def get_message(text, extra={}):
     }, cls=DjangoJSONEncoder)
 
 
-OPTIONS = [
-    "There has been considerable debate as to whether winter barley needs treating for ramularia at T1: it is unlikely to be controllable at this early timing but in a traditional two-spray programme, with the second treatment applied at GS49 (first awns), there is likely to be a benefit to treating earlier than this.",
-    "A three-spray programme for winter barley allows chlorothalonil (CTL) to be used with the latter two sprays, (so no requirement at T1) but if employing a two-spray programme (or three-sprays at T0, T1 and T2) then it would be wise to include chlorothalonil (CTL) at T1.",
-    "For winter barley, in high disease pressure seasons (mild wet early spring) T0 sprays have been necessary. Although earlier timings in a T1/T2/T3 programme should remove the need for separate T0 treatment. ",
-    "Although a three-spray programme is suggested for winter barley, a traditional two-spray approach will still give effective disease control but please note: T0 fungicides are more likely to be needed chlorothalonil (CTL) should be included at T1 if the second treatment is not applied until GS49. In all cases add a morpholine to the T0 if mildew is actively developing or if rusts are present requiring rapid knockdown (e.g. Corbel 0.3 l/ha).",
-    "T3: 2018 was a very low disease year but still large responses to fungicide use. Responses to T3 treatment have been higher in the north for some time but responses are still high generally."
-]
-
-
 class ChatConsumer(AsyncWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
@@ -49,14 +40,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
             action = text_data_json.get('action', None)
             if (action == "report"):
                 await self.send(text_data=get_message(f"Question Reported", extra={"status": True}))
-                await self.send(text_data=get_message("", extra={"options": OPTIONS}))
+                texts = shared_pipeline.report(self.question)
+                if texts:
+                    await self.send(text_data=get_message("", extra={"options": texts}))
+                else:
+                    await self.send(text_data=get_message(f"Couldn't get alternative answers", extra={"status": True}))
                 return
             elif (action == "correct"):
                 await self.send(text_data=get_message(f"Response Recorded as Correct", extra={"status": True}))
                 return
             elif (action == "answer"):
                 index = int(text_data_json['index'])
-                await self.send(text_data=get_message(f"Chosen answer: {OPTIONS[index]}", extra={"status": True}))
+                curr_in_train = shared_pipeline.processTrainingAction(
+                    self.question, index)
+                await self.send(text_data=get_message(f"Current # in training set {curr_in_train}", extra={"status": True}))
                 return
 
             response = text_data_json['text']

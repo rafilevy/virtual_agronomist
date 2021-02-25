@@ -97,14 +97,16 @@ class FurtherQuestionGenerator:
 
 
 class ContinualDPRNode:
+    outgoing_edges = 1
+
     def __init__(self, retriever, document_store):
         self.retriever = retriever
         self.document_store = document_store
-        self.lock = threading.RLock()
+        self.lock = RLock()
 
     def update_retriever(self, retriever):
         with self.lock:
-            self.document_store.update_embeddings(self.retreiver)
+            self.document_store.update_embeddings(retriever)
             self.retriever = retriever
 
     def run(self, *args, **kwargs):
@@ -124,8 +126,8 @@ class MLPipeline:
             remove_numeric_tables=False,
             valid_languages=["en"])
 
-        as4 = converter.convert(
-            file_path="../knowledgeBase/as4-winterBarley.txt")
+        knowledgeFilePath = "../knowledgeBase/as4-winterBarley.txt"
+        as4 = converter.convert(file_path=knowledgeFilePath)
 
         processor = haystack.preprocessor.preprocessor.PreProcessor(
             clean_empty_lines=True,
@@ -138,6 +140,12 @@ class MLPipeline:
         )
 
         as4Docs = processor.process(as4)
+        for i in range(0, len(as4Docs)):
+            docMetadata = as4Docs[i]['meta']
+            docMetadata['name'] = knowledgeFilePath
+            docMetadata['doucmentID'] = knowledgeFilePath \
+                + str(docMetadata['_split_id'])
+
         print("PROCESSED AS4 DOCS")
         self.document_store = ElasticsearchDocumentStore(
             similarity="dot_product", host="elasticsearch", username="", password="", index="document")
@@ -156,6 +164,7 @@ class MLPipeline:
         self.document_store.update_embeddings(dpr_retriever)
         self.dpr_node = ContinualDPRNode(dpr_retriever, self.document_store)
 
+        self.trainer = DPRTrainingManager(self.document_store, self.dpr_node)
         self.pipeline = Pipeline()
         self.pipeline.add_node(component=es_retriever,
                                name="ESRetriever", inputs=["Query"])
@@ -179,6 +188,16 @@ class MLPipeline:
         responses = self.pipeline.run(
             query=question, top_k_retriever=5)
         return responses[0].text
+
+    def report(self, question):
+        if self.trainer is None:
+            return []
+        return self.trainer.processQuestion(question)
+
+    def processTrainingAction(self, question, correct_num):
+        if self.trainer is None:
+            return 0
+        return self.trainer.processTrainingAction(question, correct_num)
 
 
 shared_pipeline = MLPipeline()
