@@ -2,6 +2,9 @@
 from haystack.retriever.dense import DensePassageRetriever
 from training.DPRTrainingSet import DPRTrainingSet
 from os import walk
+import json
+import _thread
+from threading import Lock
 
 
 class DPRTrainingManager:
@@ -59,9 +62,10 @@ class DPRTrainingManager:
     #
     # ##################
     def __init__(self, documentStore, dpr_node):
+        self.training = False
+        self.training_lock = Lock()
         self.dpr_node = dpr_node
         self.round = DPRTrainingManager.get_current_round() + 1
-        self.trainingSet = DPRTrainingSet(documentStore, self.round)
         self.documentStore = documentStore
         self.current_responses = None
 
@@ -69,8 +73,39 @@ class DPRTrainingManager:
     # train a new model, and start working on future trainingSet
     # returns path to new model
     ###################
-    def train(self):
+    def train(self, objs):
+        if self.training:
+            return
 
+        trainingSet = DPRTrainingSet(self.documentStore, self.round)
+        for pretrain_object in objs:
+            user_data = json.loads(pretrain_object.user_data)
+            meta_data = json.loads(pretrain_object.meta_data)
+            correct_num = user_data["choice"]
+            print(user_data)
+            print(meta_data)
+            print(correct_num)
+            if correct_num < len(meta_data):
+                try:
+                    trainingSet.addItem(
+                        question=user_data["question"],
+                        posID=self.get_correct_id(meta_data, correct_num),
+                        negIDs=self.get_incorrect_ids(meta_data, correct_num)
+                    )
+                    print("ADDED TO TRAININGSET")
+                except Exception as e:
+                    print(user_data)
+                    print(meta_data)
+                    print(str(e))
+                    pass
+
+        objs.delete()
+        with self.training_lock:
+            self.training = True
+        _thread.start_new_thread(self._train, (trainingSet, ))
+
+    def _train(self, trainingSet):
+        assert len(trainingSet.trainingSet) > 0
         # file where all the training stuff is
         doc_dir = "training/data/"
         # subdirectory of doc_dir where trainingsets arguments
@@ -78,12 +113,12 @@ class DPRTrainingManager:
 
         saveFileName = doc_dir + trainingDataLoc + str(self.round) + ".json"
 
-        self.trainingSet.addInBatchNegatives()
-        self.trainingSet.generateJSON(saveFileName)
+        trainingSet.addInBatchNegatives()
+        trainingSet.generateJSON(saveFileName)
 
         train_filename = trainingDataLoc + str(self.round) + ".json"
         dev_filename = "trainingSets/validationSet.json"
-        save_dir = "training/saved_models/dpr" + str(self.trainingSet.round)
+        save_dir = "training/saved_models/dpr" + str(trainingSet.round)
 
         retreiver = DPRTrainingManager.get_current_retriever(
             self.documentStore)
@@ -106,31 +141,15 @@ class DPRTrainingManager:
         )
 
         self.round += 1
-        self.trainingSet = DPRTrainingSet(self.documentStore, self.round)
         self.dpr_node.update_retriever(
             DPRTrainingManager.get_current_retriever(self.documentStore))
-
-    ##################
-    # adds an item to the training set
-    #
-    # question: string
-    # posID: document store ID
-    # negIDS: list of document store IDs
-    ##################
-    def addItem(self, question, posID, negIDs):
-        self.trainingSet.addItem(question, posID, negIDs)
-
-    #################
-    # returns the current in memory training set size
-    # can query to work out whether to run training yet
-    #################
-    def getNextSetSize(self):
-        return len(self.trainingSet.trainingSet)
+        with self.training_lock:
+            self.training = False
 
     # return document store's id for the response marked correct
     def get_correct_id(self, responses, correctNum):
         # correctRespons = responses[correctNum].to_dict()
-        return responses[correctNum].id
+        return responses[correctNum]['id']
 
     # return list of document store ids for alternative responses
     def get_incorrect_ids(self, responses, correctNum):
@@ -138,7 +157,7 @@ class DPRTrainingManager:
         for i in range(0, len(responses)):
             if i == correctNum:
                 continue
-            ids.append(responses[i].id)
+            ids.append(responses[i]['id'])
         return ids
 
     def processQuestion(self, question):
@@ -152,18 +171,15 @@ class DPRTrainingManager:
         return [x.text for x in self.current_responses] + ["None of above"]
 
     def processTrainingAction(self, question, correct_num):
-        print(f"PRINTING TRAING ACTioN {question}, {correct_num}")
         if correct_num < len(self.current_responses):
-            try:
-                self.trainingSet.addItem(
-                    question=question,
-                    posID=self.get_correct_id(
-                        self.current_responses, correct_num),
-                    negIDs=self.get_incorrect_ids(
-                        self.current_responses, correct_num)
-                )
-            except Exception as e:
-                print(str(e))
-                pass
+            user_data = {
+                "question": question,
+                "options": [x.text for x in self.current_responses],
+                "choice": correct_num,
+            }
+            meta_data = [{"text": x.text, "id": x.id}
+                         for x in self.current_responses]
+            self.current_responses = None
+            return {"user_data": json.dumps(user_data), "meta_data": json.dumps(meta_data)}
         self.current_responses = None
-        return self.getNextSetSize()
+        return None
