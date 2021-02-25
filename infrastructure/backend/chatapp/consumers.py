@@ -7,7 +7,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 import asyncio
 
 from .pipeline import shared_pipeline, ResponseRequiredException
-from .models import PreTrainingData
+from .models import PreTrainingData, RequestRecord
+from keywordExtractor.KeyInfoExtractor import shared_extractor
 
 
 def get_message(text, extra={}):
@@ -26,6 +27,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.history = {}
         self.question = None
         self.furtherQuestion = None
+        self.saved_answer = None
 
     async def connect(self):
         print("CONNECTED")
@@ -50,6 +52,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return
             elif (action == "correct"):
                 await self.send(text_data=get_message(f"Response Recorded as Correct", extra={"status": True}))
+                await database_sync_to_async(PreTrainingData.objects.create)(
+                    **shared_pipeline.trainer.getCorrectDict(self.question, self.saved_answer)
+                )
                 return
             elif (action == "answer"):
                 index = int(text_data_json['index'])
@@ -68,8 +73,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 answer = shared_pipeline.answer(self.question, self.history)
             else:
                 self.question = response
+                await database_sync_to_async(RequestRecord.objects.create)(
+                    question=response,
+                    extracted=json.dumps(
+                        shared_extractor.get_best_matches(response))
+                )
                 answer = shared_pipeline.answer(response)
-            await self.send(text_data=get_message(answer, extra={"canReport": True}))
+            self.saved_answer = answer
+            await self.send(text_data=get_message(answer.text, extra={"canReport": True}))
             self.history = {}
             self.furtherQuestion = None
         except ResponseRequiredException as e:

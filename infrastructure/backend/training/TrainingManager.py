@@ -183,3 +183,12 @@ class DPRTrainingManager:
             return {"user_data": json.dumps(user_data), "meta_data": json.dumps(meta_data)}
         self.current_responses = None
         return None
+
+    def getCorrectDict(self, question, answer):
+        user_data = {
+            "question": question,
+            "options": [answer.text],
+            "choice": 0,
+        }
+        meta_data = [{"text": answer.text, "id": answer.id}]
+        return {"user_data": json.dumps(user_data), "meta_data": json.dumps(meta_data)}
