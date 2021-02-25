@@ -3,7 +3,8 @@ from haystack.document_store.faiss import FAISSDocumentStore
 from haystack.file_converter.txt import TextConverter
 from haystack.preprocessor.preprocessor import PreProcessor
 from haystack.retriever.dense import DensePassageRetriever
-from DPRTrainingSet import DPRTrainingSet
+from training.DPRTrainingSet import DPRTrainingSet
+
 
 class DPRTrainingTester:
     """
@@ -27,10 +28,10 @@ class DPRTrainingTester:
     )
 
     # Loads the test document into the document store
-    def loadDocumentsFromFile(self,knowledgeFilePath):
+    def loadDocumentsFromFile(self, knowledgeFilePath):
         converter = TextConverter(
-                    remove_numeric_tables=False,
-                    valid_languages = ["en"])
+            remove_numeric_tables=False,
+            valid_languages=["en"])
         processor = PreProcessor(
             clean_empty_lines=True,
             clean_whitespace=False,
@@ -43,16 +44,16 @@ class DPRTrainingTester:
         self.trainingFile = knowledgeFilePath
         loadedFile = converter.convert(knowledgeFilePath)
         documents = processor.process(loadedFile)
-        for i in range(0,len(documents)):
+        for i in range(0, len(documents)):
             docMetadata = documents[i]['meta']
-            docMetadata['name']=knowledgeFilePath;
-            docMetadata['doucmentID']= knowledgeFilePath \
-                                    +str(docMetadata['_split_id'])
+            docMetadata['name'] = knowledgeFilePath
+            docMetadata['doucmentID'] = knowledgeFilePath \
+                + str(docMetadata['_split_id'])
 
         self.document_store.write_documents(documents)
         backagain = self.document_store.get_all_documents()
 
-        print("Number of documents loaded", end = ": ")
+        print("Number of documents loaded", end=": ")
         print(self.document_store.get_document_count())
 
     def __init__(self, knowledgeFilePath):
@@ -68,20 +69,19 @@ class DPRTrainingTester:
         self.document_store.update_embeddings(self.retreiver)
 
         # generate a new dprTrainingSet to populate
-        self.trainingSet = DPRTrainingSet(self.document_store,0)
-
+        self.trainingSet = DPRTrainingSet(self.document_store, 0)
 
     # return document store's id for the response marked correct
-    def get_correct_id(self, responses,correctNum):
+    def get_correct_id(self, responses, correctNum):
         # correctRespons = responses[correctNum].to_dict()
-        return responses[correctNum].id;
+        return responses[correctNum].id
 
     # return list of document store ids for alternative responses
     def get_incorrect_ids(self, responses, correctNum):
         ids = []
-        for i in range(0,len(responses)):
+        for i in range(0, len(responses)):
             if i == correctNum:
-                 continue
+                continue
             ids.append(responses[i].id)
         return ids
 
@@ -89,10 +89,10 @@ class DPRTrainingTester:
         print("------------------------------")
         question = input("Enter new question (DONE to finish): ")
 
-        if question=="":
+        if question == "":
             return
 
-        if question=='DONE':
+        if question == 'DONE':
             self.generateTraining()
             return
 
@@ -100,7 +100,7 @@ class DPRTrainingTester:
         responses = self.retreiver.retrieve(question, top_k=k)
 
         print()
-        for i in range(0,k):
+        for i in range(0, k):
             print(i, end=": ")
             print(responses[i].text)
             # print(responses[i])
@@ -109,10 +109,10 @@ class DPRTrainingTester:
         print()
         correctNum = input("Select correct response (X if none correct): ")
 
-        if correctNum=="":
+        if correctNum == "":
             return
 
-        if correctNum=='X':
+        if correctNum == 'X':
             return
 
         print()
@@ -124,12 +124,11 @@ class DPRTrainingTester:
             negIDs=self.get_incorrect_ids(responses, int(correctNum))
         )
 
-    #file where all the training stuff is
+    # file where all the training stuff is
     doc_dir = "data/"
 
     def generateTraining(self):
         self.trainingSet.addInBatchNegatives()
-
 
         self.trainingSet.generateJSON(self.trainingFile + "SET.json")
         print("New training set saved to: " + self.trainingFile + "SET.json")
