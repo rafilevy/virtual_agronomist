@@ -107,7 +107,8 @@ class DPRTrainingManager:
 
         self.round += 1
         self.trainingSet = DPRTrainingSet(self.documentStore, self.round)
-        self.dpr_node.update_retriever(retreiver)
+        self.dpr_node.update_retriever(
+            DPRTrainingManager.get_current_retriever(self.documentStore))
 
     ##################
     # adds an item to the training set
