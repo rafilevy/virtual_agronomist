@@ -11,11 +11,11 @@ class DPRTrainingManager:
         max_round = -1
         try:
             directory = "training/saved_models/"
-            _, _, filenames = next(walk(directory))
+            _, directories, _ = next(walk(directory))
 
-            for filename in filenames:
+            for directory in directories:
                 try:
-                    cur_round = int(filename.replace("dpr", ""))
+                    cur_round = int(directory.replace("dpr", ""))
                     max_round = max(cur_round, max_round)
                 except:
                     pass
@@ -29,12 +29,11 @@ class DPRTrainingManager:
         if max_round != -1:
             old_modelDir = f"training/saved_models/dpr{max_round}"
             return DensePassageRetriever.load(
-                document_store=documentStore,
+                document_store=document_store,
                 load_dir=old_modelDir,
                 max_seq_len_query=64,
                 max_seq_len_passage=256,
                 batch_size=16,
-                # use_gpu=True,
                 use_gpu=False,
                 embed_title=True,
                 use_fast_tokenizers=True
@@ -46,7 +45,7 @@ class DPRTrainingManager:
                                      max_seq_len_query=64,
                                      max_seq_len_passage=256,
                                      batch_size=16,
-                                     use_gpu=True,
+                                     use_gpu=False,
                                      embed_title=True,
                                      use_fast_tokenizers=True)
 
