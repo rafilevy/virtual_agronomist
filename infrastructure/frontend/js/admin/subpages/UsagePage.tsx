@@ -44,7 +44,6 @@ const TabPanel : React.FunctionComponent<{value: number, index: number}> = (prop
     );
 }
 
-
 export default function UsagePage(props: UsagePageProps) {
     const classes = useStyles();
     const theme = useTheme();
@@ -145,7 +144,7 @@ export default function UsagePage(props: UsagePageProps) {
                     </Paper>
                 </Grid>
                 <Grid item xs>
-                    <Paper>
+                    <Paper className={classes.paper}>
                         <Tabs 
                             value={graphTabValue} 
                             onChange={handleGraphTabChange}

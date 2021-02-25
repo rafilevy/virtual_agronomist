@@ -5,6 +5,8 @@ import UsagePage from "./subpages/UsagePage";
 import HaystackAnnotation from "./subpages/HaystackAnnotation";
 import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
 import Brightness3 from "@material-ui/icons/Brightness3";
+import LogDownloadPage from "./subpages/LogDownloadPage";
+import TrainingPage from "./subpages/TrainingPage";
 
 
 const drawerWidth = 240;
@@ -45,7 +47,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Usage", "Questions", "Annotation"] as const;
+    const pages = ["Overview", "Logs", "Usage", "Training", "Annotation"] as const;
     const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
 
 
@@ -84,7 +86,8 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                 { 
                     currentPage === "Overview" && <OverviewPage />
                     || currentPage === "Usage" && <UsagePage queries={testQueries}/>
-                    // || currentPage === "Questions" && <QuestionInsightPage />
+                    || currentPage === "Logs" && <LogDownloadPage />
+                    || currentPage === "Training" && <TrainingPage />
                     || currentPage === "Annotation" && <HaystackAnnotation />
                 }
             </main>
