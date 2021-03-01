@@ -1,4 +1,6 @@
 import json
+import sys
+import os
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from datetime import datetime
@@ -6,9 +8,9 @@ from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 import asyncio
 
-from .pipeline import shared_pipeline, ResponseRequiredException
+from .pipeline import shared_pipeline
+from .further_question_generator import ResponseRequiredException
 from .models import PreTrainingData, RequestRecord
-from keywordExtractor.KeyInfoExtractor import shared_extractor
 
 
 def get_message(text, extra={}):
@@ -75,8 +77,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.question = response
                 await database_sync_to_async(RequestRecord.objects.create)(
                     question=response,
-                    extracted=json.dumps(
-                        shared_extractor.get_best_matches(response))
+                    extracted=json.dumps({})
                 )
                 answer = shared_pipeline.answer(response)
             self.saved_answer = answer
@@ -86,7 +87,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except ResponseRequiredException as e:
             self.furtherQuestion = e.message
             await self.send(text_data=get_message(self.furtherQuestion))
-        except Exception as e:
-            print("Error processing message")
-            print(str(e))
-            await self.send(text_data=get_message("Error processing message!"))
+        # except Exception as e:
+        #     print("Error processing message")
+        #     print(str(e))
+        #     print(e)
+        #     exc_type, exc_obj, exc_tb = sys.exc_info()
+        #     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        #     print(exc_type, fname, exc_tb.tb_lineno)
+        #     await self.send(text_data=get_message("Error processing message!"))

@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y curl git pkg-config cmake
 RUN pip install farm-haystack
 RUN pip install git+https://github.com/deepset-ai/haystack.git
 RUN pip install urllib3==1.25.4
+RUN pip install transformers[torch]
+RUN pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.7.0+cpu.html
 
 RUN apt install libgraphviz-dev graphviz -y
 RUN pip install pygraphviz
@@ -19,9 +21,7 @@ RUN apt-get update && apt-get install gcc build-essential libpq-dev -y && \
 WORKDIR /home/user/app/backend
 
 # install python dependencies
-ADD *requirements.in /home/user/app/backend/
-RUN pip-compile requirements.in > requirements.txt
-
+ADD *requirements.txt /home/user/app/backend/
 RUN pip install -r requirements.txt
 
 ADD backend/ /home/user/app/backend
