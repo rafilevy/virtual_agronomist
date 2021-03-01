@@ -1,3 +1,4 @@
 docker-compose up -d elasticsearch
-sleep 0.5
-docker-compose up
+sleep 5
+docker-compose up -d
+docker-compose logs -f
