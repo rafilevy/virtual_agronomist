@@ -1,6 +1,7 @@
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework import status
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,7 @@ from rest_framework.views import APIView
 from .pipeline import shared_pipeline
 from .models import PreTrainingData
 import json
+from atomicwrites import atomic_write
 
 
 def index(request):
@@ -85,3 +87,21 @@ class TrainView(DebugabbleView):
             print(str(e))
             pass
         return get_training_response()
+
+
+class DataUpdateView(DebugabbleView):
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, format='json'):
+        def update_file(filename, f):
+            if f not in request.FILES:
+                return
+            with open(filename, 'wb+', overwrite=True) as destination:
+                for chunk in request.files[f].chunks():
+                    destination.write(chunk)
+
+        update_file('knowledgeBase/english_contractions.json', "parser")
+        update_file('knowledgeBase/pressure_score.csv', 'pressure_score')
+        update_file('knowledgeBase/categories.csv', 'categories')
+        shared_pipeline.question_generator.update_components()
+        return Response("OK!", status=status.HTTP_201_CREATED)

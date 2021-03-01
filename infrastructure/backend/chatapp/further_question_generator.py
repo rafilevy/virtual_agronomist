@@ -1,6 +1,7 @@
 from .KeyInfoExtractor import KeywordExtractor
 from .parsing import Parser
 from .pressure_score_generator import PressureScoreGenerator
+from threading import RLock
 
 
 class ResponseRequiredException(Exception):
@@ -23,6 +24,7 @@ class FurtherQuestionGenerator:
         self.parser = Parser()
         self.setup_keyword_extractor()
         self.pressure_score_generator = PressureScoreGenerator()
+        self.update_lock = RLock()
 
     def setup_keyword_extractor(self):
         key_word_extractor = KeywordExtractor()
@@ -167,7 +169,13 @@ class FurtherQuestionGenerator:
         return sorted_docs[:3]
 
     def run(self, **kwargs):
-        #print("Running Question Generator")
-        original_filters = self.individualFiltersGenerator(kwargs["query"])
-        specified = list(original_filters.keys())
-        return ({"result": self.furtherQuestions(kwargs["documents"], specified, original_filters)}, "output_1")
+        with self.update_lock:
+            #print("Running Question Generator")
+            original_filters = self.individualFiltersGenerator(kwargs["query"])
+            specified = list(original_filters.keys())
+            return ({"result": self.furtherQuestions(kwargs["documents"], specified, original_filters)}, "output_1")
+
+    def update_components(self):
+        with self.update_lock:
+            self.setup_keyword_extractor()
+            self.pressure_score_generator.update_pressure_table()
