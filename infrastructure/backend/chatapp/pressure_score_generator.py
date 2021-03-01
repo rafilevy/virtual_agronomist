@@ -8,6 +8,7 @@ class PressureScoreGenerator:
         self.update_pressure_table()
 
     def update_pressure_table(self):
+        self.pressure_table = {}
         with open('knowledgeBase/pressure_score.csv', mode='r') as infile:
             reader = csv.reader(infile)
             for row in reader:
