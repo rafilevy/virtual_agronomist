@@ -108,13 +108,14 @@ class FurtherQuestionGenerator:
         # print(len(docs),len(filters_list))
 
         # Filter the retrieved docs before asking questions, eliminate docs with different keywords but keep those does not mention the keywords.
-        for keyword, new_key in original_filters.items():
-            temp_d = [doc for i, doc in enumerate(docs) if not (
-                (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
-            temp_f = [filters for i, filters in enumerate(filters_list) if not (
-                (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
-        docs = temp_d
-        filters_list = temp_f
+        if original_filters:
+            for keyword, new_key in original_filters.items():
+                temp_d = [doc for i, doc in enumerate(docs) if not (
+                    (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
+                temp_f = [filters for i, filters in enumerate(filters_list) if not (
+                    (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
+            docs = temp_d
+            filters_list = temp_f
         # print(len(docs),len(filters_list))
 
         # Rank the docs based on closeness to keywords in question

@@ -376,6 +376,7 @@ class FurtherQuestionGenerator:
         # print(len(docs),len(filters_list))
 
         # Filter the retrieved docs before asking questions, eliminate docs with different keywords but keep those does not mention the keywords.
+        temp_d = []
         for keyword, new_key in original_filters.items():
             temp_d = [doc for i, doc in enumerate(docs) if not (
                 (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
