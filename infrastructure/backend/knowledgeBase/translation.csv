@@ -1,0 +1,58 @@
+Winter Wheat
+T0, leaf 4
+T1, leaf 3
+T1.5, leaf 2
+T2, flag leaf
+T3, ear
+T4, second ear
+
+Spring Wheat
+T0
+T1
+T2
+T3
+
+Winter Barley
+T0
+T1
+T2
+T3
+
+Spring Barley
+T0
+T1
+T2
+
+Winter Oats
+T0
+T1
+T2
+
+Spring Oats
+T0
+T1
+T2
+
+Winter Oilseed Rape
+T0, stem extension
+T1, early flower
+T2, early mid flower
+T3, mid flower
+
+Spring Oilseed Rape
+T0, stem extension
+T1, early flower
+T2, early mid flower
+T3, mid flower
+
+Winter Beans
+T1, early mid flower
+T2, mid late flower
+
+Spring Beans
+T1, early mid flower
+T2, mid late flower
+
+Winter Linseed
+
+Spring Linseed

@@ -10,6 +10,7 @@ import asyncio
 
 from .pipeline import shared_pipeline
 from .further_question_generator import ResponseRequiredException
+from .pressure_score_generator import ChoiceRequiredException
 from .models import PreTrainingData, RequestRecord
 
 
@@ -87,6 +88,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.history = {}
             self.furtherQuestion = None
         except ResponseRequiredException as e:
+            self.furtherQuestion = e.message
+            await self.send(text_data=get_message(self.furtherQuestion))
+        except ChoiceRequiredException as e:
             self.furtherQuestion = e.message
             await self.send(text_data=get_message(self.furtherQuestion))
         # except Exception as e:
