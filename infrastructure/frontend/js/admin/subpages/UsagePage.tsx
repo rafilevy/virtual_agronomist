@@ -2,6 +2,7 @@ import * as React from "react"
 import { Box, CssBaseline, Divider, Grid, makeStyles, Paper, Tab, Tabs, Typography, useTheme,  } from "@material-ui/core"
 import { ChartData, Line } from "react-chartjs-2";
 import { defaults } from "react-chartjs-2";
+import { TabPanel } from "../utils/TabPanel";
 
 const MONTH_MS = 1000*60*60*24*30
 const WEEK_MS = 1000*60*60*24*7
@@ -22,26 +23,6 @@ const useStyles = makeStyles((theme) => ({
 
 type UsagePageProps = {
     queries: number[] //Date numbers (millisecond since midnight January 1, 1970 UTC)
-}
-
-const TabPanel : React.FunctionComponent<{value: number, index: number}> = (props) => {
-    const {index, value, children, ...other} = props;
-
-    return (
-        <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-        >
-        {value === index && (
-            <Box p={3}>
-                {children}
-            </Box>
-        )}
-        </div>
-    );
 }
 
 export default function UsagePage(props: UsagePageProps) {
