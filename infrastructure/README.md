@@ -6,6 +6,32 @@ This was made using the vintasoftware/django-react-boilerplate template - adapte
 
 ## Running
 
+### First time using:
+-   build the backend:
+    docker-compose build backend
+-   start postgres and elastisearch container
+    docker-compose up postgres
+    docker-compose up elasticsearch
+-   add the faiss database
+    docker exec -it infrastructure_postgres_1 psql -U fUclnecXsZRakPNYtEGKphYeqoKMgatR -d agronomist
+    in the prompt enter: create database faiss;
+    press CTRL-D to close that
+-   Sort out the django migration stuff!
+    docker-compose run --rm backend python manage.py makemigrations
+    docker-compose run --rm backend python manage.py migrate
+-   Create a user for you to login
+    docker-compose run --rm backend python manage.py createsuperuser
+    enter an email and password when prompted
+
+-   Everything should now work! Start it all up
+    docker-compose up
+
+-   After the first setup you can start it with:
+    docker-compose up -d elasticsearch
+    then wait about 5 seconds...
+    docker-compose up
+
+
 ### Setup
 
 -   Create the migrations:  
