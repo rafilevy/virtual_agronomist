@@ -1,0 +1,30 @@
+winter wheat,varieties,KWS Extase,0
+winter wheat,varieties,Dunston/Graham/KWS Zyatt/Moulton/LG Motown/LG Sundance/RGT Illustrious/KWS Firefly,2
+winter wheat,varieties,Bennington/Costello/Elicit/Freiston/Gleam/KWS Crispin/KWS Siskin/Revelation/Skyfall,4
+winter wheat,varieties,Crusoe/Evolution/KWS Kerrin/KWS Silverstone/KWS Trinity/LG Skyscraper/LG Spotlight/Shabras,6
+winter wheat,varieties,Claire/Dickens/Elation/Grafton/JB Diego/KWS Basset/KWS Jackal/KWS Lili/LG Detroit/RGT Gravity/Savello/Viscount/Zulu,8
+winter wheat,varieties,Cordiale/Gallant/KWS Barrel/Leeds/LG Jigsaw/LG Interstellar/LG Rhythm/LG Sabertooth/Myriad/Reflection/KWS Santiago/SY Loki,10
+winter wheat,area in the country,East,1
+winter wheat,area in the country,North,2
+winter wheat,area in the country,South East,2
+winter wheat,area in the country,West,3
+winter wheat,area in the country,South,3
+winter wheat,area in the country,South West,4
+winter wheat,sowing date,Early September,10
+winter wheat,sowing date,Mid-September,8
+winter wheat,sowing date,Late September,7
+winter wheat,sowing date,Early October,5
+winter wheat,sowing date,Mid-October,3
+winter wheat,sowing date,Late October,2
+winter wheat,sowing date,November onwards,0
+winter wheat,weather in  November and December in your area,Wet Mild Winter,2
+winter wheat,weather in  November and December in your area,Dry Cool Winter,0
+winter wheat,weather in January to March in your area,Wet Mild Early Spring,4
+winter wheat,weather in January to March in your area,Dry Mild Early Spring,2
+winter wheat,weather in January to March in your area,Dry Cool Early Spring,0
+winter wheat,sprayer capacity,All Wheat in 1 day,0
+winter wheat,sprayer capacity,All wheat in 2-3 days,1
+winter wheat,sprayer capacity,4 days or more,3
+winter wheat,attitude to risk,cautious,2
+winter wheat,attitude to risk,default,0
+winter wheat,attitude to risk,take a risk,-1

@@ -28,4 +28,11 @@ __pycache__/
 */.sass-cache
 *.map
 
+infrastructure/frontend/dev
+
+
+*/backend/training/mlruns/
+*/backend/training/data/mlruns/
+*/backend/training/saved_models/
+*/backend/training/data/trainingSets/generated/
 
