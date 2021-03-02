@@ -1,6 +1,6 @@
 import * as React from "react"
-import { Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, Input, Link, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Select, Tab, Tabs, Tooltip, Typography } from "@material-ui/core"
-import { Delete, SwapHoriz } from "@material-ui/icons";
+import { Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, Input, InputLabel, Link, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Select, Tab, Tabs, Tooltip, Typography } from "@material-ui/core"
+import { Delete, Label, SwapHoriz } from "@material-ui/icons";
 
 type document = {
     id: number,
@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
     },
     doc: {
 
+    },
+    filePicker: {
+        padding: theme.spacing(1),
     }
 }));
 export default function DocumentsPage() {
@@ -38,7 +41,6 @@ export default function DocumentsPage() {
     const [uploadTextDocDialogueOpen, setUploadTextDocDialogueOpen] = React.useState(false);
     const [uploadTableDocDialogueOpen, setUploadTableDocDialogueOpen] = React.useState(false);
     const [removeDocDialogueOpen, setRemoveDocDialogueOpen] = React.useState(false);
-    const [switchDocDialogueOpen, setSwitchDocDialogueOpen] = React.useState(false);
 
     const [activeDocIndex, setActiveDocIndex] = React.useState(0);
     React.useEffect(()=> {
@@ -54,7 +56,7 @@ export default function DocumentsPage() {
     const textFileUploadChosen = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) setSelectedTextFile(e.target.files.item(0));
     }
-    const handleChosenFileUpload = () => {
+    const handleTextFileUpload = () => {
         if (selectedTextFile) {
             const formData = new FormData();
             formData.append("file", selectedTextFile);
@@ -66,7 +68,7 @@ export default function DocumentsPage() {
                 }
             ).then((res)=> {
                 setDocuments(documents);
-                setUploadTableDocDialogueOpen(true);
+                setUploadTextDocDialogueOpen(false);
             }).catch((e)=> {
                 console.error(e);
                 setSelectedTextFileE("There was a problem uploading the file.")
@@ -74,6 +76,35 @@ export default function DocumentsPage() {
             setSelectedTextFileE("");
         } else {
             setSelectedTextFileE("You must choose a file to upload");
+        }
+    }
+
+    const [selectedTableFile, setSelectedTableFile] = React.useState<File | null>(null);
+    const [selectedTableFileE, setSelectedTableFileE] = React.useState("");
+    const tableFileUploadChosen = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) setSelectedTableFile(e.target.files.item(0));
+    }
+    const handleTableFileUpload = () => {
+        if (selectedTextFile !== null && selectedTableFile !== null) {
+            const formData = new FormData();
+            formData.append("text", selectedTextFile);
+            formData.append("csv", selectedTableFile);
+            fetch(
+                'https:localhost:8000/table',
+                {
+                    method: 'POST',
+                    body: formData,
+                }
+            ).then((res)=> {
+                setDocuments(documents);
+                setUploadTableDocDialogueOpen(false);
+            }).catch((e)=> {
+                console.error(e);
+                setSelectedTableFileE("There was a problem uploading the file.")
+            })
+            setSelectedTableFileE("");
+        } else {
+            setSelectedTableFileE("You must choose a suitable csv file and text descriptor to upload");
         }
     }
 
@@ -89,11 +120,6 @@ export default function DocumentsPage() {
         );
         setDocuments(documents.splice(i, 1));
         setRemoveDocDialogueOpen(false);
-    }
-
-    const handleSwitchButtonClicked = (i: number) => {
-        setActiveDocIndex(i);
-        setSwitchDocDialogueOpen(true);
     }
 
     return (
@@ -132,13 +158,6 @@ export default function DocumentsPage() {
                                                     <Delete />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Swap document">
-                                                <IconButton edge="end"
-                                                    onClick = {()=>handleSwitchButtonClicked(i)}
-                                                >
-                                                    <SwapHoriz />
-                                                </IconButton>
-                                            </Tooltip>
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 )}
@@ -159,14 +178,16 @@ export default function DocumentsPage() {
                             <DialogContentText id="alert-dialog-description">
                                 Choose a file to upload
                             </DialogContentText>
-                            <input accept=".txt" type="file" name="chosenFile" onChange={textFileUploadChosen} />
+                            <Box>
+                                <input accept=".txt" type="file" name="chosenFile" onChange={textFileUploadChosen} />
+                            </Box>
                             {   selectedTextFileE !== "" &&
                                 <Typography variant="caption" color="secondary">{selectedTextFileE}</Typography>
                             }
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={()=>handleChosenFileUpload()} color="primary" autoFocus>
+                    <Button onClick={()=>handleTextFileUpload()} color="primary" autoFocus>
                         Upload
                     </Button>
                     </DialogActions>
@@ -181,18 +202,28 @@ export default function DocumentsPage() {
                     <DialogContent>
                         <Box>
                             <DialogContentText id="alert-dialog-description">
-                                Choose a csv and a text file to upload
+                                Choose a csv file and accompanying text descriptor file for it
                             </DialogContentText>
-                            <Button>
-                                Choose file
-                            </Button>
+                            <Box>
+                                <Box>
+                                    CSV File:
+                                    <input className={classes.filePicker} accept=".csv" type="file" name="csvFile" onChange={tableFileUploadChosen} />
+                                </Box>
+                                <Box>
+                                    Text File:
+                                    <input className={classes.filePicker} accept=".txt" type="file" name="textFile" onChange={textFileUploadChosen} />
+                                </Box>
+                                {   selectedTableFileE !== "" &&
+                                    <Typography variant="caption" color="secondary">{selectedTableFileE}</Typography>
+                                }
+                            </Box>
                             <Typography variant="caption"></Typography>
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={()=>setUploadTableDocDialogueOpen(false)} color="secondary" autoFocus>
-                        Upload
-                    </Button>
+                        <Button onClick={handleTableFileUpload} color="secondary" autoFocus>
+                            Upload
+                        </Button>
                     </DialogActions>
                 </Dialog>
                 <Dialog id="remove-doc-dialogue"
@@ -210,30 +241,6 @@ export default function DocumentsPage() {
                     <DialogActions>
                     <Button onClick={()=>handleDocumentRemove(activeDocIndex)} color="secondary" autoFocus>
                         Delete
-                    </Button>
-                    </DialogActions>
-                </Dialog>
-                <Dialog id="switch-doc-dialogue"
-                    open={switchDocDialogueOpen}
-                    onClose={()=>setSwitchDocDialogueOpen(false)}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Upload a new table document"}</DialogTitle>
-                    <DialogContent>
-                        <Box>
-                            <DialogContentText id="alert-dialog-description">
-                                Choose a csv and a text file to upload
-                            </DialogContentText>
-                            <Button>
-                                Choose file
-                            </Button>
-                            <Typography variant="caption"></Typography>
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                    <Button onClick={()=>setSwitchDocDialogueOpen(false)} color="secondary" autoFocus>
-                        Upload
                     </Button>
                     </DialogActions>
                 </Dialog>
