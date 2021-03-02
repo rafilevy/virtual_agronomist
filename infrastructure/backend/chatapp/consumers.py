@@ -54,9 +54,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return
             elif (action == "correct"):
                 await self.send(text_data=get_message(f"Response Recorded as Correct", extra={"status": True}))
-                await database_sync_to_async(PreTrainingData.objects.create)(
-                    **shared_pipeline.trainer.getCorrectDict(self.question, self.saved_answer)
-                )
+                if type(self.saved_answer) is not str:
+                    await database_sync_to_async(PreTrainingData.objects.create)(
+                        **shared_pipeline.trainer.getCorrectDict(self.question, self.saved_answer)
+                    )
                 return
             elif (action == "answer"):
                 index = int(text_data_json['index'])
@@ -81,7 +82,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
                 answer = shared_pipeline.answer(response)
             self.saved_answer = answer
-            await self.send(text_data=get_message(answer.text, extra={"canReport": True}))
+            text = answer if type(answer) is str else answer.text
+            await self.send(text_data=get_message(text, extra={"canReport": True}))
             self.history = {}
             self.furtherQuestion = None
         except ResponseRequiredException as e:
