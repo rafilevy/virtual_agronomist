@@ -32,8 +32,6 @@ class MLPipeline:
         converter = file_converter.txt.TextConverter(
             remove_numeric_tables=False,
             valid_languages=["en"])
-        knowledgeFilePath = "knowledgeBase/as4-winterBarley.txt"
-        as4 = converter.convert(file_path=knowledgeFilePath)
 
         processor = preprocessor.preprocessor.PreProcessor(
             clean_empty_lines=True,
@@ -45,18 +43,28 @@ class MLPipeline:
             split_overlap=0
         )
 
-        as4Docs = processor.process(as4)
-        for i in range(0, len(as4Docs)):
-            docMetadata = as4Docs[i]['meta']
-            docMetadata["table"] = False
-            docMetadata['name'] = knowledgeFilePath
-            docMetadata['doucmentID'] = knowledgeFilePath \
-                + str(docMetadata['_split_id'])
+        self.document_store.delete_all_documents(index = "document")
+        self.document_store_faiss.delete_all_documents(index = "document")
 
-        self.document_store.delete_all_documents(index='document')
-        self.document_store.write_documents(as4Docs)
-        self.document_store_faiss.delete_all_documents(index='document')
-        self.document_store_faiss.write_documents(as4Docs)
+        for file in [file for file in os.listdir("knowledgeBase/text") if ".txt" in file]:
+            doc = converter.convert(file_path="knowledgeBase/text/"+file)
+            doc_processed = processor.process(doc)
+
+            for i in range(len(doc_processed)):
+                doc_processed[i]["meta"]["index"] = -1
+                doc_processed[i]["meta"]["table"] = False
+                doc_processed[i]["meta"]["name"] = file[:-4]
+
+            self.document_store.write_documents(doc_processed,index="document")
+            self.document_store_faiss.write_documents(doc_processed,index="document")
+
+        backagain = self.document_store_faiss.get_all_documents()
+        for i in range(0,len(backagain)):
+            print(i)
+            print(":\n")
+            print(backagain[i])
+            print("---------------")
+
         return (processor, converter)
 
     def write_table_docs(self, converter, processor):
@@ -86,16 +94,19 @@ class MLPipeline:
         for i in range(len(tableDocs)):
             tableDocs[i]["meta"]["index"] = i
             tableDocs[i]["meta"]["table"] = True
+            tableDocs[i]["meta"]["name"] = ""
 
-        self.document_store.write_documents(tableDocs)
-        self.document_store_faiss.write_documents(tableDocs)
+        self.document_store.write_documents(tableDocs,index="document")
+        self.document_store_faiss.write_documents(tableDocs,index="document")
         return data
+
 
     def setup(self):
         print("SETTING UP PIPELINE")
         self.document_store = ElasticsearchDocumentStore(
-            similarity="dot_product", host="elasticsearch", username="", password="", index="document")
+            similarity="dot_product", host="elasticsearch", username="", password="",index = "document")
         self.document_store_faiss = FAISSDocumentStore(
+            index = "document",
             faiss_index_factory_str="Flat",
             return_embedding=True,
             sql_url=f"postgresql://{config('POSTGRES_USER')}:{config('POSTGRES_PASSWORD')}@{config('POSTGRES_HOST')}:{config('POSTGRES_PORT')}/faiss"
@@ -154,7 +165,7 @@ class MLPipeline:
         print(f"USING HISTORY: {history}")
         self.question_generator.history = history
         responses = self.pipeline.run(
-            query=question, top_k_retriever=5)
+            query=self.question_generator.question_parsing(question), top_k_retriever=20)
         if type(responses) is list:
             return responses[0]
         else:

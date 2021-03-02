@@ -7,7 +7,7 @@ services:
     postgres:
         image: 'postgres:alpine'
         volumes:
-            - .db:/var/lib/postgresql/data
+            - .db:/var/lib/postgresql/data1
         ports:
             - 5432:5432
         env_file: backend/.env

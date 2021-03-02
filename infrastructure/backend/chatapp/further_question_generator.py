@@ -2,6 +2,7 @@ from .KeyInfoExtractor import KeywordExtractor
 from .parsing import Parser
 from .pressure_score_generator import PressureScoreGenerator
 from threading import RLock
+import re
 
 
 class ResponseRequiredException(Exception):
@@ -91,7 +92,7 @@ class FurtherQuestionGenerator:
         return keywords
 
     def topDocsFilterGenerator(self, docs):
-        return [self.individualFiltersGenerator(doc.text) for doc in docs]
+        return [self.individualFiltersGenerator(doc.meta["name"] + "  " + doc.text) for doc in docs]
 
     def filters_difference(self, filters_list, specified=[]):
         current_filters = {}
@@ -164,10 +165,11 @@ class FurtherQuestionGenerator:
                 filters_list[i]["pressure"] == [pressure_level])) else match[i] for i in range(len(filters_list))]
         sorted_docs = sorted(
             zip(match, docs), key=lambda pair: pair[0], reverse=True)
-        # for doc in sorted_docs:
-        # print(doc[1].text)
-        # print(doc[1].meta)
-        return sorted_docs[:3]
+        for doc in sorted_docs:
+            print(doc[1].text)
+            print(doc[1].meta)
+        result_docs = [doc[1] for doc in sorted_docs]
+        return result_docs[:3]
 
     def run(self, **kwargs):
         with self.update_lock:
