@@ -155,7 +155,10 @@ class MLPipeline:
         self.question_generator.history = history
         responses = self.pipeline.run(
             query=question, top_k_retriever=5)
-        return responses[0]
+        if type(responses) is list:
+            return responses[0]
+        else:
+            return responses
 
     def report(self, question):
         if self.trainer is None:
