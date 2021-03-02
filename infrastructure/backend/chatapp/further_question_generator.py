@@ -134,12 +134,13 @@ class FurtherQuestionGenerator:
         # Filter the retrieved docs before asking questions, eliminate docs with different keywords but keep those does not mention the keywords.
         if original_filters:
             for keyword, new_key in original_filters.items():
-                temp_d = [doc for i, doc in enumerate(docs) if not (
+                if len(new_key) > 0:
+                    temp_d = [doc for i, doc in enumerate(docs) if not (
                     (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
-                temp_f = [filters for i, filters in enumerate(filters_list) if not (
+                    temp_f = [filters for i, filters in enumerate(filters_list) if not (
                     (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
-            docs = temp_d
-            filters_list = temp_f
+            docs = temp_d.copy()
+            filters_list = temp_f.copy()
         # print(len(docs),len(filters_list))
         for pair in zip(docs,filters_list):
             print(pair[0].text)
@@ -148,9 +149,10 @@ class FurtherQuestionGenerator:
         # Rank the docs based on closeness to keywords in question
         match = [0 for doc in docs]
         for keyword, new_key in original_filters.items():
-            match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (new_key[0].lower(
+            if len(new_key) > 0:
+                match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (new_key[0].lower(
             ) in filters_list[i][keyword])) else match[i] for i in range(len(filters_list))]
-            match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (filters_list[i][keyword] == [
+                match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (filters_list[i][keyword] == [
                                       new_key[0].lower()])) else match[i] for i in range(len(filters_list))]
 
         # Use only questions from the top 10 results. Otherwise too many questions asked.
@@ -201,6 +203,8 @@ class FurtherQuestionGenerator:
             keyword = self.filters_difference(filters_list[:10], specified)
 
         # Treat the special set of pressure score questions
+        if "pressure" in original_filters and original_filters["pressure"] == []:
+            contained_pressure = True
         print(contained_pressure)
         pressure_result = ""
         if contained_pressure and "Crop" in original_filters:
