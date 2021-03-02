@@ -94,7 +94,7 @@ class MLPipeline:
         for i in range(len(tableDocs)):
             tableDocs[i]["meta"]["index"] = i
             tableDocs[i]["meta"]["table"] = True
-            tableDocs[i]["meta"]["name"] = ""
+            tableDocs[i]["meta"]["name"] = "  "
 
         self.document_store.write_documents(tableDocs,index="document")
         self.document_store_faiss.write_documents(tableDocs,index="document")
