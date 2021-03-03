@@ -81,13 +81,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 answer = shared_pipeline.answer(self.question, self.history)
             else:
                 self.question = response
-                await database_sync_to_async(RequestRecord.objects.create)(
-                    question=response,
-                    extracted=json.dumps({})
-                )
                 answer = shared_pipeline.answer(response)
             self.saved_answer = answer
             text = answer if type(answer) is str else answer.text
+            await database_sync_to_async(RequestRecord.objects.create)(
+                question=self.question,
+                extracted=json.dumps(
+                    shared_pipeline.question_generator.individualFiltersGenerator(self.question)),
+                answer=text
+            )
             await self.send(text_data=get_message(text, extra={"canReport": True}))
             self.history = {}
             self.furtherQuestion = None
