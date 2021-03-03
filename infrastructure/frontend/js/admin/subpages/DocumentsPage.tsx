@@ -3,9 +3,10 @@ import { Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogC
 import { Delete, Label, SwapHoriz } from "@material-ui/icons";
 
 type document = {
-    id: number,
+    index: number,
     name: string,
-    type: "csv" | "text"
+    type: "csv" | "text",
+    is_table: boolean,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 export default function DocumentsPage() {
     const classes = useStyles();
 
-    const [documents, setDocuments] = React.useState<document[]>([{id:1, name:"d1", type:"text"}]);
+    const [documents, setDocuments] = React.useState<document[]>([]);
 
     const [uploadTextDocDialogueOpen, setUploadTextDocDialogueOpen] = React.useState(false);
     const [uploadTableDocDialogueOpen, setUploadTableDocDialogueOpen] = React.useState(false);
@@ -45,11 +46,12 @@ export default function DocumentsPage() {
     const [activeDocIndex, setActiveDocIndex] = React.useState(0);
     React.useEffect(()=> {
         const fetchDocuments = async () => {
-            const results : document[] = await (await fetch("https://localhost:8000/documents")).json();
-            setDocuments(results);
+            const results_documents : document[] = await (await fetch("http://localhost:8000/data/document/")).json();
+            const results_tables : document[] = await (await fetch("http://localhost:8000/data/table/")).json();
+            setDocuments(results_documents.concat(results_tables));
         };
         fetchDocuments()
-    }, [documents]);
+    }, [documents.length===0]);
 
     const [selectedTextFile, setSelectedTextFile] = React.useState<File | null>(null);
     const [selectedTextFileE, setSelectedTextFileE] = React.useState("");
@@ -61,13 +63,13 @@ export default function DocumentsPage() {
             const formData = new FormData();
             formData.append("file", selectedTextFile);
             fetch(
-                'https:localhost:8000/documents',
+                'http://localhost:8000/data/document/',
                 {
                     method: 'POST',
                     body: formData,
                 }
             ).then((res)=> {
-                setDocuments(documents);
+                setDocuments([]);
                 setUploadTextDocDialogueOpen(false);
             }).catch((e)=> {
                 console.error(e);
@@ -87,16 +89,16 @@ export default function DocumentsPage() {
     const handleTableFileUpload = () => {
         if (selectedTextFile !== null && selectedTableFile !== null) {
             const formData = new FormData();
-            formData.append("text", selectedTextFile);
+            formData.append("txt", selectedTextFile);
             formData.append("csv", selectedTableFile);
             fetch(
-                'https:localhost:8000/table',
+                'http://localhost:8000/data/table/',
                 {
                     method: 'POST',
                     body: formData,
                 }
             ).then((res)=> {
-                setDocuments(documents);
+                setDocuments([]);
                 setUploadTableDocDialogueOpen(false);
             }).catch((e)=> {
                 console.error(e);
@@ -113,14 +115,18 @@ export default function DocumentsPage() {
         setRemoveDocDialogueOpen(true);
     }
     const handleDocumentRemove = (i: number) => {
-        fetch(`localhost:8000/documents/${i}`, 
+        var path = documents[i].is_table ? 'table' : 'document'
+        fetch(`http://localhost:8000/data/${path}/${documents[i].index}/`, 
             {
                 method: "DELETE"
             }
         );
-        setDocuments(documents.splice(i, 1));
+        setDocuments([]);
         setRemoveDocDialogueOpen(false);
     }
+    const trainerHelper = async (extra={}) => {
+        await (await fetch(`http://localhost:8000/data/reload/`, extra)).json();
+    };
 
     return (
         <div>
@@ -163,6 +169,15 @@ export default function DocumentsPage() {
                                 )}
                             </List>
                         </Paper>
+                    </Box>
+                    <Box mt="5px">
+                        <Button variant="contained" color="secondary"
+                            onClick={()=>trainerHelper({
+                                method: "POST"
+                            })}
+                        >
+                            Reload Document Store
+                        </Button>
                     </Box>
                 </Box>
             <div>
@@ -235,7 +250,7 @@ export default function DocumentsPage() {
                     <DialogTitle id="alert-dialog-title">{"Remove document"}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Are you sure you wish to delete the document: {activeDocIndex !== -1 ? documents[activeDocIndex].name : "[NONE]"}? This action cannot be undone.
+                            Are you sure you wish to delete the document? This action cannot be undone.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

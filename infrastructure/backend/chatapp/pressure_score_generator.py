@@ -10,8 +10,9 @@ class ChoiceRequiredException(Exception):
         message -- explanation of the error
     """
 
-    def __init__(self, message):
+    def __init__(self, message, options):
         self.message = message
+        self.options = options
 
 
 class PressureScoreGenerator:
@@ -45,21 +46,15 @@ class PressureScoreGenerator:
             for key in self.pressure_table[crop].keys():
                 message = "Please choose the " + key + \
                     " which best describes your current case:\n\n"
-                print("Please choose the " + key +
-                      " which best describes your current case: ")
-                for option in self.pressure_table[crop][key]:
-                    message = message + \
-                        str(option) + ": " + \
-                        self.pressure_table[crop][key][option][0] + "\n\n"
-                if message in history and history[message].isnumeric() and (int(history[message]) >= 1 and int(history[message]) <= len(self.pressure_table[crop][key])):
-                    score = score + \
-                        self.pressure_table[crop][key][int(
-                            history[message])][1]
+                options = [self.pressure_table[crop][key][option][0]
+                           for option in self.pressure_table[crop][key]]
+                if message in history:
+                    score = score + options[int(history[message])][1]
                 elif message in history:
                     message = "Your input is not Valid. Please refresh and try again."
-                    raise ChoiceRequiredException(message)
+                    raise ChoiceRequiredException(message, options)
                 else:
-                    raise ChoiceRequiredException(message)
+                    raise ChoiceRequiredException(message, options)
 
             if score <= 12:
                 pressure_level = "low"

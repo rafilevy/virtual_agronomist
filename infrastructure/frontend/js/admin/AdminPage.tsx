@@ -8,6 +8,7 @@ import Brightness3 from "@material-ui/icons/Brightness3";
 import LogDownloadPage from "./subpages/LogDownloadPage";
 import TrainingPage from "./subpages/TrainingPage";
 import DocumentsPage from "./subpages/DocumentsPage";
+import { ExitToAppRounded } from "@material-ui/icons";
 
 
 const drawerWidth = 240;
