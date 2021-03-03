@@ -7,7 +7,7 @@ import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
 import Brightness3 from "@material-ui/icons/Brightness3";
 import LogDownloadPage from "./subpages/LogDownloadPage";
 import TrainingPage from "./subpages/TrainingPage";
-import { ExitToAppRounded } from "@material-ui/icons";
+import DocumentsPage from "./subpages/DocumentsPage";
 
 
 const drawerWidth = 240;
@@ -48,7 +48,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Usage", "Training", "Annotation"] as const;
+    const pages = ["Overview", "Logs", "Usage", "Training", "Annotation", "Documents"] as const;
     const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
 
 
@@ -91,6 +91,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                     || currentPage === "Logs" && <LogDownloadPage />
                     || currentPage === "Training" && <TrainingPage />
                     || currentPage === "Annotation" && <HaystackAnnotation />
+                    || currentPage === "Documents" && <DocumentsPage />
                 }
             </main>
         </div>
