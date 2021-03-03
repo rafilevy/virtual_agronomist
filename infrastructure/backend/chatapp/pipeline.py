@@ -107,10 +107,7 @@ class MLPipeline:
 
     def re_process_documents(self):
         with self.doc_lock:
-            PreTrainingData.objects.all().delete()
-            processor, converter = self.write_as4_docs()
-            table_data = self.write_table_docs(converter, processor)
-            self.document_store.update_embeddings(self.dpr_node.retriever)
+            self.setup()
 
     def setup(self):
         print("SETTING UP PIPELINE")
