@@ -1,6 +1,7 @@
 import csv
 import re
 
+
 class ChoiceRequiredException(Exception):
     """Exception raised for errors in the input.
 
@@ -11,6 +12,7 @@ class ChoiceRequiredException(Exception):
 
     def __init__(self, message):
         self.message = message
+
 
 class PressureScoreGenerator:
     def __init__(self):
@@ -41,13 +43,18 @@ class PressureScoreGenerator:
             # Would it be possible to change this into options by click?
 
             for key in self.pressure_table[crop].keys():
-                message = "Please choose the " + key + " which best describes your current case:\n\n"
-                print("Please choose the " + key + \
-                        " which best describes your current case: ")
+                message = "Please choose the " + key + \
+                    " which best describes your current case:\n\n"
+                print("Please choose the " + key +
+                      " which best describes your current case: ")
                 for option in self.pressure_table[crop][key]:
-                    message = message + str(option) + ": " + self.pressure_table[crop][key][option][0] + "\n\n"
+                    message = message + \
+                        str(option) + ": " + \
+                        self.pressure_table[crop][key][option][0] + "\n\n"
                 if message in history and history[message].isnumeric() and (int(history[message]) >= 1 and int(history[message]) <= len(self.pressure_table[crop][key])):
-                    score = score + self.pressure_table[crop][key][int(history[message])][1]
+                    score = score + \
+                        self.pressure_table[crop][key][int(
+                            history[message])][1]
                 elif message in history:
                     message = "Your input is not Valid. Please refresh and try again."
                     raise ChoiceRequiredException(message)
@@ -62,9 +69,11 @@ class PressureScoreGenerator:
                 pressure_level = "high"
             else:
                 pressure_level = "very high"
-            text = "Your current disease pressure score is " + str(score) + ".\nThis means that the disease pressure is " + pressure_level + "."
-            print("Your current disease pressure score is " + str(score) + \
+            text = "Your current disease pressure score is " + \
+                str(score) + ".\nThis means that the disease pressure is " + \
+                pressure_level + "."
+            print("Your current disease pressure score is " + str(score) +
                   ".\nThis means that the disease pressure is " + pressure_level + ".")
-            return (pressure_level,text)
+            return (pressure_level, text)
         else:
             return -1
