@@ -49,7 +49,9 @@ class PressureScoreGenerator:
                 options = [self.pressure_table[crop][key][option][0]
                            for option in self.pressure_table[crop][key]]
                 if message in history:
-                    score = score + options[int(history[message])][1]
+                    option = list(self.pressure_table[crop][key].keys())[
+                        int(history[message])]
+                    score = score + self.pressure_table[crop][key][option][1]
                 elif message in history:
                     message = "Your input is not Valid. Please refresh and try again."
                     raise ChoiceRequiredException(message, options)
