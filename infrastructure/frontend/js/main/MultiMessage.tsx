@@ -44,7 +44,7 @@ export default function MultiMessage({msg, onChosenOption} : {msg: message, onCh
     return (
         <Paper className={[classes.container, msg.from ? classes.msg_left : classes.msg_right].join(" ")}>
                 <Typography variant="caption">
-                    {msg.from ? "Virtual Agronomist" : "You"} - {msg.time.toLocaleTimeString().substr(0,5)} - {"please select the best response"}
+                    {msg.from ? "Virtual Agronomist" : "You"} - {msg.time.toLocaleTimeString().substr(0,5)} - {msg.text}
                 </Typography>
                 {msg.options!.map((text, i) => 
                     <>
