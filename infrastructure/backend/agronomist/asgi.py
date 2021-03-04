@@ -16,7 +16,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from chatapp.consumers import ChatConsumer
 from chatapp.pipeline import shared_pipeline
 
-# shared_pipeline.setup()
+shared_pipeline.setup()
 
 application = URLRouter([
     path('ws/chat/', AuthMiddlewareStack(ChatConsumer.as_asgi())),
