@@ -2,12 +2,12 @@ import * as React from "react"
 import { AppBar, Box, Button, Container, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, makeStyles, Paper, TextareaAutosize, Toolbar, Typography, useTheme } from "@material-ui/core"
 import OverviewPage from "./subpages/OverviewPage";
 import UsagePage from "./subpages/UsagePage";
-import HaystackAnnotation from "./subpages/HaystackAnnotation";
 import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
 import Brightness3 from "@material-ui/icons/Brightness3";
 import LogDownloadPage from "./subpages/LogDownloadPage";
 import TrainingPage from "./subpages/TrainingPage";
 import { ExitToAppRounded } from "@material-ui/icons";
+import KeywordsPage from "./subpages/KeywordsPage";
 
 
 const drawerWidth = 240;
@@ -48,7 +48,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Usage", "Training", "Annotation"] as const;
+    const pages = ["Overview", "Logs", "Usage", "Training", "Keywords"] as const;
     const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
 
 
@@ -90,7 +90,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                     || currentPage === "Usage" && <UsagePage queries={testQueries}/>
                     || currentPage === "Logs" && <LogDownloadPage />
                     || currentPage === "Training" && <TrainingPage />
-                    || currentPage === "Annotation" && <HaystackAnnotation />
+                    || currentPage === "Keywords" && <KeywordsPage />
                 }
             </main>
         </div>
