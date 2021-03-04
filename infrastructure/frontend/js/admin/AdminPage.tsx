@@ -49,7 +49,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Usage", "Training", "Keywords"] as const;
+    const pages = ["Overview", "Logs", "Usage", "Training", "Documents", "Keywords"] as const;
     const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
 
 
@@ -91,6 +91,7 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                     || currentPage === "Usage" && <UsagePage queries={testQueries}/>
                     || currentPage === "Logs" && <LogDownloadPage />
                     || currentPage === "Training" && <TrainingPage />
+                    || currentPage === "Documents" && <DocumentsPage />
                     || currentPage === "Keywords" && <KeywordsPage />
                 }
             </main>
