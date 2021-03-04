@@ -38,7 +38,7 @@ class MLPipeline:
 
         processor = preprocessor.preprocessor.PreProcessor(
             clean_empty_lines=True,
-            clean_whitespace=True,
+            clean_whitespace=False,
             clean_header_footer=True,
             split_by="passage",
             split_length=1,
