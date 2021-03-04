@@ -37,19 +37,12 @@ type keyword = {
     replacements: string[]
 }
 
-const templateData : keyword[] = [
-    {key: 0, word: "Hey", replacements: ["Hi", 'Howdy', "Hello", "Bonjour", "howsit"]},
-    {key: 1, word: "bye", replacements: ["cya", 'goodbye', "bye bye", "adios"]},
-    {key: 2, word: "cat", replacements: ["meow", 'scratchy', "muffins", "cute"]},
-    {key: 3, word: "dog", replacements: ["woofer", 'pupper', "yapper", "mlemmer"]}
-]
-
 export default function KeywordsPage() {
     const classes = useStyles();
 
     const [searchFieldValue, setSearchFieldValue] = React.useState("");
-    const [keywords, setKeywords] = React.useState<keyword[]>(templateData);
-    const [activeKeywords, setActiveKeywords] = React.useState<keyword[]>(templateData);
+    const [keywords, setKeywords] = React.useState<keyword[]>([]);
+    const [activeKeywords, setActiveKeywords] = React.useState<keyword[]>([]);
 
     const handleSearchChanged = (s : string) => {
         setSearchFieldValue(s);
