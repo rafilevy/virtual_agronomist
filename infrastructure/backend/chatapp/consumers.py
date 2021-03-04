@@ -10,6 +10,7 @@ import asyncio
 
 from .pipeline import shared_pipeline
 from .further_question_generator import ResponseRequiredException
+from .pressure_score_generator import ChoiceRequiredException
 from .models import PreTrainingData, RequestRecord
 
 
@@ -30,6 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.question = None
         self.furtherQuestion = None
         self.saved_answer = None
+        self.singleChoice = True
 
     async def connect(self):
         print("CONNECTED")
@@ -45,6 +47,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             text_data_json = json.loads(text_data)
             action = text_data_json.get('action', None)
             if (action == "report"):
+                self.singleChoice = False
                 await self.send(text_data=get_message(f"Question Reported", extra={"status": True}))
                 texts = shared_pipeline.report(self.question)
                 if texts:
@@ -59,7 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         **shared_pipeline.trainer.getCorrectDict(self.question, self.saved_answer)
                     )
                 return
-            elif (action == "answer"):
+            elif (action == "answer") and not self.singleChoice:
                 index = int(text_data_json['index'])
                 data = shared_pipeline.processTrainingAction(
                     self.question, index)
@@ -69,6 +72,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 else:
                     await self.send(text_data=get_message(f"Ignoring...", extra={"status": True}))
                 return
+            elif (action == "answer") and self.singleChoice:
+                text_data_json['text'] = text_data_json['index']
 
             response = text_data_json['text']
             if self.furtherQuestion is not None:
@@ -76,19 +81,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 answer = shared_pipeline.answer(self.question, self.history)
             else:
                 self.question = response
-                await database_sync_to_async(RequestRecord.objects.create)(
-                    question=response,
-                    extracted=json.dumps({})
-                )
                 answer = shared_pipeline.answer(response)
             self.saved_answer = answer
             text = answer if type(answer) is str else answer.text
+            await database_sync_to_async(RequestRecord.objects.create)(
+                question=self.question,
+                extracted=json.dumps(
+                    shared_pipeline.question_generator.individualFiltersGenerator(self.question)),
+                answer=text
+            )
             await self.send(text_data=get_message(text, extra={"canReport": True}))
             self.history = {}
             self.furtherQuestion = None
         except ResponseRequiredException as e:
             self.furtherQuestion = e.message
             await self.send(text_data=get_message(self.furtherQuestion))
+        except ChoiceRequiredException as e:
+            self.furtherQuestion = e.message
+            self.singleChoice = True
+            await self.send(text_data=get_message("", extra={"options": e.options}))
         # except Exception as e:
         #     print("Error processing message")
         #     print(str(e))

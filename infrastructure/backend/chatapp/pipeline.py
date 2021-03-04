@@ -1,5 +1,6 @@
 import os
 import csv
+from threading import RLock
 from subprocess import Popen, PIPE, STDOUT
 
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
@@ -16,6 +17,7 @@ from haystack.retriever.dense import BaseRetriever
 from haystack import file_converter, preprocessor
 from .further_question_generator import FurtherQuestionGenerator
 from .pipeline_components import QueryClassifier, ContinualDPRNode, TableRetriever, Result
+from .models import PreTrainingData
 from training.TrainingManager import DPRTrainingManager
 
 from decouple import config
@@ -27,13 +29,12 @@ class MLPipeline:
         self.document_store = None
         self.document_store_faiss = None
         self.question_generator = None
+        self.doc_lock = RLock()
 
     def write_as4_docs(self):
         converter = file_converter.txt.TextConverter(
             remove_numeric_tables=False,
             valid_languages=["en"])
-        knowledgeFilePath = "knowledgeBase/as4-winterBarley.txt"
-        as4 = converter.convert(file_path=knowledgeFilePath)
 
         processor = preprocessor.preprocessor.PreProcessor(
             clean_empty_lines=True,
@@ -45,18 +46,30 @@ class MLPipeline:
             split_overlap=0
         )
 
-        as4Docs = processor.process(as4)
-        for i in range(0, len(as4Docs)):
-            docMetadata = as4Docs[i]['meta']
-            docMetadata["table"] = False
-            docMetadata['name'] = knowledgeFilePath
-            docMetadata['doucmentID'] = knowledgeFilePath \
-                + str(docMetadata['_split_id'])
+        self.document_store.delete_all_documents(index="document")
+        self.document_store_faiss.delete_all_documents(index="document")
 
-        self.document_store.delete_all_documents(index='document')
-        self.document_store.write_documents(as4Docs)
-        self.document_store_faiss.delete_all_documents(index='document')
-        self.document_store_faiss.write_documents(as4Docs)
+        for file in [file for file in os.listdir("knowledgeBase/text") if ".txt" in file]:
+            doc = converter.convert(file_path="knowledgeBase/text/" + file)
+            doc_processed = processor.process(doc)
+
+            for i in range(len(doc_processed)):
+                doc_processed[i]["meta"]["index"] = -1
+                doc_processed[i]["meta"]["table"] = False
+                doc_processed[i]["meta"]["name"] = file[:-4]
+
+            self.document_store.write_documents(
+                doc_processed, index="document")
+            self.document_store_faiss.write_documents(
+                doc_processed, index="document")
+
+        backagain = self.document_store_faiss.get_all_documents()
+        for i in range(0, len(backagain)):
+            print(i)
+            print(":\n")
+            print(backagain[i])
+            print("---------------")
+
         return (processor, converter)
 
     def write_table_docs(self, converter, processor):
@@ -86,16 +99,22 @@ class MLPipeline:
         for i in range(len(tableDocs)):
             tableDocs[i]["meta"]["index"] = i
             tableDocs[i]["meta"]["table"] = True
+            tableDocs[i]["meta"]["name"] = "  "
 
-        self.document_store.write_documents(tableDocs)
-        self.document_store_faiss.write_documents(tableDocs)
+        self.document_store.write_documents(tableDocs, index="document")
+        self.document_store_faiss.write_documents(tableDocs, index="document")
         return data
+
+    def re_process_documents(self):
+        with self.doc_lock:
+            self.setup()
 
     def setup(self):
         print("SETTING UP PIPELINE")
         self.document_store = ElasticsearchDocumentStore(
             similarity="dot_product", host="elasticsearch", username="", password="", index="document")
         self.document_store_faiss = FAISSDocumentStore(
+            index="document",
             faiss_index_factory_str="Flat",
             return_embedding=True,
             sql_url=f"postgresql://{config('POSTGRES_USER')}:{config('POSTGRES_PASSWORD')}@{config('POSTGRES_HOST')}:{config('POSTGRES_PORT')}/faiss"
@@ -148,17 +167,18 @@ class MLPipeline:
         print("SETUP PIPELINE")
 
     def answer(self, question, history={}):
-        if self.pipeline is None:
-            return ""
+        with self.doc_lock:
+            if self.pipeline is None:
+                return ""
 
-        print(f"USING HISTORY: {history}")
-        self.question_generator.history = history
-        responses = self.pipeline.run(
-            query=question, top_k_retriever=5)
-        if type(responses) is list:
-            return responses[0]
-        else:
-            return responses
+            print(f"USING HISTORY: {history}")
+            self.question_generator.history = history
+            responses = self.pipeline.run(
+                query=self.question_generator.question_parsing(question), top_k_retriever=20)
+            if type(responses) is list:
+                return responses[0]
+            else:
+                return responses
 
     def report(self, question):
         if self.trainer is None:

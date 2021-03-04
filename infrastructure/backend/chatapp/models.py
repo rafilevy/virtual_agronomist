@@ -11,3 +11,4 @@ class PreTrainingData(models.Model):
 class RequestRecord(IndexedTimeStampedModel):
     question = models.TextField()
     extracted = models.TextField()
+    answer = models.TextField()

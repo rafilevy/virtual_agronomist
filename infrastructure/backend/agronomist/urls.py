@@ -7,5 +7,5 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path("", include("chatapp.urls"), name="game"),
+    path("", include("chatapp.urls"), name="chatapp"),
 ]

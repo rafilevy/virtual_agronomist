@@ -9,8 +9,8 @@ class Result:
         # print("Running Result")
         # print(type(kwargs["result"]))
         if type(kwargs["result"]) is list:
-            docs = [doc[1] for doc in kwargs["result"]]
-            return (docs, "output_1")
+            #docs = [doc[1] for doc in kwargs["result"]]
+            return (kwargs["result"], "output_1")
         else:
             return (kwargs["result"]["answer"], "output_1")
 
@@ -26,9 +26,6 @@ class QueryClassifier:
         #  print(doc.text)
         # print(kwargs["documents"][0].meta["table"] == "0")
         # docs = kwargs["documents"]
-        # for doc in docs:
-        #  print(doc.text)
-        #  print(doc.meta)
         if (kwargs["documents"][0].meta["table"] == "false"):
             # print("It is a general question.")
             return (kwargs, "output_1")
