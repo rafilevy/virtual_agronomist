@@ -34,7 +34,7 @@ class KeywordExtractor:
         print("Currently held Categories: ")
         if verbose:
             for ki in self.key_infos:
-                print("* ", ki.name + ": ", ki.one_grams, " || ", ki.completes)
+                print("* ", ki.name + ": " + ki.question + " ", ki.completes)
         else:
             for ki in self.key_infos:
                 print("* ", ki.name)
@@ -57,7 +57,7 @@ class KeywordExtractor:
         #  need to change to be delimited by |? so that questions can contain commas?
 
         with open(filename) as f:
-            reader = csv.reader(f, dialect='csv_dialect')  # delimiter='|' ?
+            reader = csv.reader(f, dialect='csv_dialect', delimiter='|')  # delimiter='|' ?
             data = list(reader)
             lines = len(data)
 
@@ -155,7 +155,5 @@ class KeywordExtractor:
                         d = self.reduce_run(reduced_run, completes)
                         self.merge_dicts(diction, d)
                     return diction
-
-
 
 
