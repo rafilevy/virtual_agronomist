@@ -2,7 +2,7 @@ import * as React from "react"
 import { Box, CssBaseline, Divider, Grid, makeStyles, Paper, Tab, Tabs, Typography, useTheme,  } from "@material-ui/core"
 import { ChartData, Line } from "react-chartjs-2";
 import { defaults } from "react-chartjs-2";
-import { TabPanel } from "../utils/TabPanel";
+import moment from 'moment';
 
 const MONTH_MS = 1000*60*60*24*30
 const WEEK_MS = 1000*60*60*24*7
@@ -21,43 +21,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-type UsagePageProps = {
-    queries: number[] //Date numbers (millisecond since midnight January 1, 1970 UTC)
-}
+type UsageData = {
+    data : {[Key: string]: number}, 
+    past_week: number, 
+    past_month: number, 
+    past_year: number
+} 
 
-export default function UsagePage(props: UsagePageProps) {
+export default function UsagePage() {
     const classes = useStyles();
     const theme = useTheme();
     defaults.global.defaultFontColor = theme.palette.text.primary;
 
-    const generateGraphData : (type: "DAILY" | "MONTHLY") => [Chart.ChartData, number] = (type : "DAILY" | "MONTHLY") => {
+    const generateGraphData : (data : {[Key: string]: number}) => Chart.ChartData = (data : {[Key: string]: number}) => {
         const currentDate = new Date();
-        const cuttofDate = 
-            (new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())).valueOf() -
-            (DAY_MS * (type==="DAILY" ? 7 : 30));
-
-        const query_counts : number[] = [];
-        let prev = null;
-        let i = -1;
-        let total_queries = 0;
-        for (let t of props.queries) {
-            const rounded = t - (t % DAY_MS);
-            if (rounded < cuttofDate) break;
-            if (rounded === prev) {
-                query_counts[i]++;
-            } else {
-                i++;
-                prev = rounded;
-                query_counts[i] = 1;
-            }
-            total_queries++;
-        }
-        
-        const generateDailyLabels = () => {
-            const startDay = currentDate.getDay();
-            const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-            return weekdays.slice(startDay, weekdays.length).concat(weekdays.slice(0, startDay));
-        };
+        const query_counts: number[] = [];
         const generateMonthlyLabels = () => {
             const startDay = currentDate.getDate();
             const labels = [];
@@ -77,13 +55,20 @@ export default function UsagePage(props: UsagePageProps) {
             }
             for (let i = 0; i<30; i++) {
                 labels.push(
-                    month_string((startDay - i) <= 0 ? prev_month_day_off(currentDate.getMonth()) + (startDay - i) : startDay - i ));
+                    month_string(
+                        (startDay - i) <= 0 ? 
+                            prev_month_day_off(currentDate.getMonth()) + (startDay - i) : 
+                            startDay - i 
+                    )
+                );
+                const key = moment(currentDate).add(-i, 'd').toISOString().split('T')[0];
+                query_counts.push(key in data ? data[key] : 0);
             }
             return labels.reverse();
         }
 
         const chart_data : ChartData<Chart.ChartData> = {
-            labels: type==="DAILY" ? generateDailyLabels() : generateMonthlyLabels(),
+            labels: generateMonthlyLabels(),
             datasets: [
                 { 
                     data: query_counts.reverse(),
@@ -94,14 +79,22 @@ export default function UsagePage(props: UsagePageProps) {
             ],
         };
 
-        return [chart_data, total_queries];
+        return chart_data;
     }
-
-    const [daily_graph_data, weekly_total] = generateGraphData("DAILY");
-    const [monthly_graph_data, monthly_total] = generateGraphData("MONTHLY");
-
-    const [graphTabValue, setGraphTabValue] = React.useState(0);
-    const handleGraphTabChange = (_ : any, newVal : number) => setGraphTabValue(newVal);
+    const [graphData, setGraphData] = React.useState<Chart.ChartData | null>(null);
+    const [weeklyTotal, setWeeklyTotal] = React.useState(0);
+    const [monthlyTotal, setMonthlyTotal] = React.useState(0);
+    const [yearlyTotal, setYearlyTotal] = React.useState(0);
+    React.useEffect(()=> {
+        const fetchData = async () => {
+            const response : UsageData = await (await fetch("http://localhost:8000/usage/")).json();
+            setWeeklyTotal(response.past_week);
+            setMonthlyTotal(response.past_month);
+            setYearlyTotal(response.past_year);
+            setGraphData(generateGraphData(response.data));
+        };
+        fetchData();
+    }, []);
 
     return (
         <div>
@@ -113,34 +106,20 @@ export default function UsagePage(props: UsagePageProps) {
                         <Divider></Divider>
                         <Box className={classes.paperText}>
                             <Typography paragraph>
-                                Past 7 days: {weekly_total}
+                                Past 7 days: {weeklyTotal}
                             </Typography>
                             <Typography paragraph>
-                                Past 30 days: {monthly_total}
+                                Past 30 days: {monthlyTotal}
                             </Typography>
                             <Typography paragraph style={{marginBottom: "0"}}>
-                                Past year: {props.queries.length}
+                                Past year: {yearlyTotal}
                             </Typography>
                         </Box>
                     </Paper>
                 </Grid>
                 <Grid item xs>
                     <Paper className={classes.paper}>
-                        <Tabs 
-                            value={graphTabValue} 
-                            onChange={handleGraphTabChange}
-                            indicatorColor="primary"
-                            textColor="primary"
-                        >
-                            <Tab label="7 Days"/>
-                            <Tab label="30 Days"/>
-                        </Tabs>
-                        <TabPanel value={graphTabValue} index={0}>
-                            <Line options={{legend: {display: false}, title:{display: true, text: "Noº Queries"}}} data={daily_graph_data} width={300} height={300} />
-                        </TabPanel>
-                        <TabPanel value={graphTabValue} index={1}>
-                            <Line options={{legend: {display: false}, title:{display: true, text: "Noº Queries"}}} data={monthly_graph_data} width={300} height={300} />
-                        </TabPanel>
+                        {graphData && <Line options={{legend: {display: false}, title:{display: true, text: "Noº Queries"}}} data={graphData} width={300} height={300} />}
                     </Paper>
                 </Grid>
             </Grid>

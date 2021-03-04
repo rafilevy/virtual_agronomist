@@ -51,7 +51,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=get_message(f"Question Reported", extra={"status": True}))
                 texts = shared_pipeline.report(self.question)
                 if texts:
-                    await self.send(text_data=get_message("", extra={"options": texts}))
+                    await self.send(text_data=get_message("please select the best response", extra={"options": texts}))
                 else:
                     await self.send(text_data=get_message(f"Couldn't get alternative answers", extra={"status": True}))
                 return
@@ -99,7 +99,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except ChoiceRequiredException as e:
             self.furtherQuestion = e.message
             self.singleChoice = True
-            await self.send(text_data=get_message("", extra={"options": e.options}))
+            await self.send(text_data=get_message(e.message, extra={"options": e.options}))
         # except Exception as e:
         #     print("Error processing message")
         #     print(str(e))

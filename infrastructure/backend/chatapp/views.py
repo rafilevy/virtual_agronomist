@@ -7,13 +7,16 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.urls import reverse
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from .pipeline import shared_pipeline
-from .models import PreTrainingData
+from .models import PreTrainingData, RequestRecord
 import json
 import os
+import csv
 from atomicwrites import atomic_write
+from datetime import datetime, timedelta
 
 
 def index(request):
@@ -93,6 +96,44 @@ class TrainView(DebugabbleView):
         return get_training_response()
 
 
+class LogView(DebugabbleView):
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        response = HttpResponse(content_type='text/csv')
+        # force download.
+        response['Content-Disposition'] = 'attachment;filename=export.csv'
+        # the csv writer
+        writer = csv.writer(response)
+        model_fields = RequestRecord._meta.fields + RequestRecord._meta.many_to_many
+        field_names = [field.name for field in model_fields]
+        # Write a first row with header information
+        writer.writerow(field_names)
+        # Write data rows
+        for obj in RequestRecord.objects.all():
+            writer.writerow([getattr(obj, field) for field in field_names])
+        return response
+
+
+class UsageView(DebugabbleView):
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        items = RequestRecord.objects.filter(created__lte=datetime.today(), created__gt=datetime.today(
+        ) - timedelta(days=30)).values('created__date').annotate(count=models.Count('id'))
+
+        def get_count(**kwargs):
+            return RequestRecord.objects.filter(created__lte=datetime.today(), created__gt=datetime.today() - timedelta(**kwargs)).count()
+
+        data = {str(i["created__date"]): i["count"] for i in items}
+        return Response({
+            "data": data,
+            "past_week": get_count(days=7),
+            "past_month": get_count(days=30),
+            "past_year": get_count(weeks=52)
+        })
+
+
 class ReLoadDocumentsView(DebugabbleView):
     permission_classes = (IsAdminUser,)
 
@@ -119,6 +160,7 @@ class DataUpdateView(DebugabbleView):
         update_file('knowledgeBase/english_contractions.json', "parser")
         update_file('knowledgeBase/pressure_score.csv', 'pressure_score')
         update_file('knowledgeBase/categories.csv', 'categories')
+        update_file('knowledgeBase/translation.csv', 'timing')
         shared_pipeline.question_generator.update_components()
         return Response("OK!", status=status.HTTP_201_CREATED)
 

@@ -192,4 +192,3 @@ class MLPipeline:
 
 
 shared_pipeline = MLPipeline()
-shared_pipeline.setup()

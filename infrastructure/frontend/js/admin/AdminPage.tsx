@@ -8,7 +8,7 @@ import LogDownloadPage from "./subpages/LogDownloadPage";
 import TrainingPage from "./subpages/TrainingPage";
 import DocumentsPage from "./subpages/DocumentsPage";
 import { ExitToAppRounded } from "@material-ui/icons";
-import KeywordsPage from "./subpages/KeywordsPage";
+import ConfigUploadPage from "./subpages/ConfigUploadPage";
 
 
 const drawerWidth = 240;
@@ -49,15 +49,8 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const pages = ["Overview", "Logs", "Usage", "Training", "Documents", "Keywords"] as const;
-    const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview");
-
-
-    const testQueries = [];
-    const date = Date.now();
-    for (let i = 0; i<10_000; i++) {
-        testQueries.push(date - (i*1000*60*60) + (((Math.random()*2)-1)*12000*60*60))
-    }
+    const pages = ["Overview", "Logs", "Usage", "Training", "Documents", "Config"] as const;
+    const [currentPage, setCurrentPage] = React.useState<typeof pages[number]>("Overview")
 
     return (
         <div className={classes.root}>
@@ -88,11 +81,11 @@ function AdminPage({toggleTheme} : {toggleTheme : ()=>void} ) {
                 <Toolbar />
                 { 
                     currentPage === "Overview" && <OverviewPage />
-                    || currentPage === "Usage" && <UsagePage queries={testQueries}/>
+                    || currentPage === "Usage" && <UsagePage />
                     || currentPage === "Logs" && <LogDownloadPage />
                     || currentPage === "Training" && <TrainingPage />
                     || currentPage === "Documents" && <DocumentsPage />
-                    || currentPage === "Keywords" && <KeywordsPage />
+                    || currentPage === "Config" && <ConfigUploadPage />
                 }
             </main>
         </div>
