@@ -1,0 +1,47 @@
+Eradicant fungicide activity continues to slip as more resistant Septoria isolates develop, so our control programmes are focussed on preventative disease control. Protectant activity remains good but requires well-timed applications. We also need careful fungicide stewardship to try to prevent further selection of more resistant isolates. Fortunately there has also been a shift to wheat varieties with better disease resistance, which will help reduce disease pressure and slow the development of resistance. 
+
+Every year has different levels of disease pressure, often with different diseases being prominent. In 2014/15 there was moderate disease pressure from both Septoria tritici and yellow rust, whereas 2015/16 had very variable septoria and yellow rust levels across the country. 2016/17 had lower Septoria pressure due to a dry winter and very dry spring but yellow rust pressure was higher as was that from brown rust later in the season. 2017/18 had mainly low disease pressure in a season with a long, open autumn; a cold, wet winter; a short late, wet spring and a long, dry, very hot summer. 
+
+Crops have been sown over a wide range of sowing dates this autumn and this has resulted in differing levels of disease in the crops at this stage. In the September sowings it is easy to find Septoria, yellow and brown rust and mildew present and active. Later sowing dates should result in less disease pressure but the mild and wet December will allow some disease build up in these crops. 
+
+The factors considered in the disease pressure scores are: variety, sowing date, geographical location, the weather, sprayer capacity and attitude to risk.
+
+Later sowing of winter wheat has a profound influence on disease pressure. 
+
+Geographic location has an effect on disease pressure for winter wheat, for example lower input septoria treatments would be more appropriate for the east compared to the west/south west under almost any circumstances. 
+
+Generally it is the weather condition after a spray that dictates the level of subsequent input required, but warm wet weather prior to treatment will build disease pressure. 
+
+Sprayer capacity has an effect on disease pressure as it indicates the ability to spray promptly and minimise the chance of an interruption due to weather. If a farm has the capacity to spray all their wheat crops in a shorter period then it may not need as robust a programme as one that requires several days to cover all the wheat area. 
+
+Growers’ attitude to risk is important in assessing disease pressure. However, our recent studies on the economics of wheat disease control have shown that there is a three times greater penalty to margin for spending too little when disease pressure turns out to be high than the same overall spend when disease pressure is lower; so members may wish to be cautious. 
+
+The earlier a crop is sown the greater the disease infection it will be exposed to and the larger the amount of inoculum plants will be carrying into the spring. Autumn 2018 did allow later sowings but many farms started earlier and there is a visible difference in the level of disease in crops sown at different times with the later crops carrying much less disease.
+
+There is a three times greater penalty to margin for spending too little when disease pressure turns out to be high than the same overall spend when disease pressure is lower; so members may wish to be cautious. 
+
+Here is an example treatment program for winter wheat where there is very high septoria pressure (for example a wet year in the South West). The target cost is £100-£115/ha 
+T0 (Leaf 4) – CTL 500 g/ha (add azole e.g. tebuconazole 50% dose if active rust present, add mildewicide if required 
+T1 (Leaf 3) – CTL 500 g/ha + Aviator 1.0 l/ha or Adexar 1.0 l/ha or Keystone 0.8 l/ha 
+T1.5 (Leaf 2) – CTL 500 g/ha 
+T2 (Flag Leaf) – CTL 500 g/ha + Ascra 1.25 l/ha or Adexar 1.25 l/ha or Elatus Era 1.0 l/ha
+T3 (Ear) – Proline 0.4 l/ha + tebuconazole 30% dose
+
+Here is an example treatment program for winter wheat where there is very high yellow rust pressure (for example a mild year with a susceptible variety in the East). The target cost is £100-£105/ha 
+T0 (Leaf 4) – CTL 500g/ha + azole e.g. tebuconazole 50% dose if active rust present, or add strobilurin if no active rust, add mildewicide if required 
+T1 (Leaf 3) – CTL 500g/ha + Adexar 1 l/ha or Keystone 0.8 l/ha 
+T1.5 (Leaf 2) – Azole or Strobilurin ± CTL 
+T2 (Flag Leaf) – CTL 500g/ha + Adexar 1.25 l/ha or Elatus Era 1.0 l/ha 
+T3 (Ear) – tebuconazole 75% dose
+
+Here is an example treatment program for winter wheat where there is moderate septoria pressure (for example somewhere in the East). The target cost is £85-£100/ha 
+T0 (Leaf 4) – CTL 500 g/ha (add azole e.g. tebuconazole 50% dose if active rust present, add mildewicide if required 
+T1 (Leaf 3) – CTL 500 g/ha + Aviator 1.0 l/ha or Adexar 1.0 l/ha or Keystone 0.8 l/ha 
+T2 (Flag Leaf) – CTL 500 g/ha + Ascra 1.0 l/ha or Adexar 1.0 l/ha or Elatus Era 0.8 l/ha 
+T3 (Ear) – Proline 275 0.4 l/ha + tebuconazole 30% dose
+
+Here is an example treatment program for winter wheat where there is low septoria pressure (for example a resistant variety in the North). The target cost is £60-£80/ha
+No T0 
+T1 (Leaf 3) – CTL 500 g/ha + Proline 275 0.4 l/ha 
+T2 (Flag Leaf) – CTL 500 g/ha + Aviator 1.0 l/ha or Adexar 1.0 l/ha or Keystone 0.8 l/ha 
+T3 (Ear) – tebuconazole 75% dose 
