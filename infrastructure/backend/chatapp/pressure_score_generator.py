@@ -73,4 +73,4 @@ class PressureScoreGenerator:
                   ".\nThis means that the disease pressure is " + pressure_level + ".")
             return (pressure_level, text)
         else:
-            return -1
+            return ("","")

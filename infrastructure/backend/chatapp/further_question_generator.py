@@ -46,12 +46,14 @@ class FurtherQuestionGenerator:
 
     def question_parsing(self, text):
         keywords = self.key_word_extractor.get_best_matches(text)
-        if "Crop" not in keywords and self.questions["Crop"] + "(If not, please reply No) " not in self.history:
-            raise ResponseRequiredException(self.questions["Crop"] + "(If not, please reply No) ")
-        elif "Crop" not in keywords:
-            crop = self.history[self.questions["Crop"] + "(If not, please reply No) "]
-        else:
-            crop = keywords["Crop"][0]
+        translatable = self.timing_translator.contains_translatable_timing(text)
+        if translatable:
+            if "Crop" not in keywords and self.questions["Crop"] + "(If not, please reply No) " not in self.history:
+                raise ResponseRequiredException(self.questions["Crop"] + "(If not, please reply No) ")
+            elif "Crop" not in keywords:
+                crop = self.history[self.questions["Crop"] + "(If not, please reply No) "]
+            else:
+                crop = keywords["Crop"][0]
 
         parsed = self.parser.parse(text)
         parsed_string = ""
@@ -59,8 +61,10 @@ class FurtherQuestionGenerator:
             parsed_string = parsed_string + string
         parsed_string = re.sub("[\(\[].*?[\)\]]", "", parsed_string)
         parsed_string = re.sub("  ", " ", parsed_string)
-        parsed_string = self.timing_translator.translate(parsed_string,crop)
-        return crop + " " + parsed_string
+        if translatable:
+            parsed_string = self.timing_translator.translate(parsed_string,crop)
+            return crop + " " + parsed_string
+        return parsed_string
 
     def generate_keywords(self, text):
         parsed = self.parser.parse(text)
@@ -112,7 +116,7 @@ class FurtherQuestionGenerator:
             print(type(doc))
             print(doc.meta)
             print(doc.meta["name"])
-            
+
         return [self.individualFiltersGenerator(doc.meta["name"] + "  " + doc.text) for doc in docs]
 
     def filters_difference(self, filters_list, specified=[]):
@@ -133,14 +137,18 @@ class FurtherQuestionGenerator:
 
         # Filter the retrieved docs before asking questions, eliminate docs with different keywords but keep those does not mention the keywords.
         if original_filters:
+            print(original_filters)
+            temp_d = []
+            temp_f = []
             for keyword, new_key in original_filters.items():
                 if len(new_key) > 0:
                     temp_d = [doc for i, doc in enumerate(docs) if not (
                     (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
                     temp_f = [filters for i, filters in enumerate(filters_list) if not (
                     (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
-            docs = temp_d.copy()
-            filters_list = temp_f.copy()
+            if temp_d and temp_f:
+                docs = temp_d.copy()
+                filters_list = temp_f.copy()
         # print(len(docs),len(filters_list))
         for pair in zip(docs,filters_list):
             print(pair[0].text)
@@ -181,7 +189,7 @@ class FurtherQuestionGenerator:
                     #match = temp_m
 
                     #print(len(doc),len(filters_list),len(match))
-                    
+
                     match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (new_key.lower(
                     ) in filters_list[i][keyword])) else match[i] for i in range(len(filters_list))]
                     match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (filters_list[i][keyword] == [
