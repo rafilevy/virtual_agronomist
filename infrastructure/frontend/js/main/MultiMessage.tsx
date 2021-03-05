@@ -36,7 +36,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function MultiMessage({msg, onChosenOption} : {msg: message, onChosenOption: (n: number) => void}) {
+export default function MultiMessage({msg, onChosenOption, latest} : {msg: message, onChosenOption: (n: number) => void, latest: boolean}) {
     const classes = useStyles();
     const [chosenOption, _setChosenOption] = React.useState<number>();
     const setChosenOption = (i: number) => { _setChosenOption(i); onChosenOption(i) }
@@ -46,7 +46,7 @@ export default function MultiMessage({msg, onChosenOption} : {msg: message, onCh
                 <Typography variant="caption">
                     {msg.from ? "Virtual Agronomist" : "You"} - {msg.time.toLocaleTimeString().substr(0,5)} - {msg.text}
                 </Typography>
-                {msg.options!.map((text, i) => 
+                {msg.options!.map((text, i) =>
                     <>
                         {i != 0 && <Divider className={classes.separator} />}
                         <div className={classes.message}>
@@ -61,10 +61,11 @@ export default function MultiMessage({msg, onChosenOption} : {msg: message, onCh
                                 justifyContent: "center",
                                 alignItems: "center",
                             }}>
-                                <IconButton aria-label="correct" onClick={() => chosenOption == undefined && (setChosenOption(i)) }>
+                                <IconButton aria-label="correct" onClick={() => latest && (chosenOption == undefined && (setChosenOption(i))) }>
                                     <CheckCircleOutlineSharp style={{ color: chosenOption == i ? green[500] : green[100] }} />
                                 </IconButton>
                             </div>
+
                         </div>
                     </>
                 )}

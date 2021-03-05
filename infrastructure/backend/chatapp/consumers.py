@@ -49,7 +49,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if (action == "report"):
                 self.singleChoice = False
                 await self.send(text_data=get_message(f"Question Reported", extra={"status": True}))
-                texts = shared_pipeline.report(self.question)
+                self.lastQReported = self.question
+                self.alternative_responses = shared_pipeline.report(self.question)
+                texts = [x.text for x in self.alternative_responses] + ["None of above"]
                 if texts:
                     await self.send(text_data=get_message("please select the best response", extra={"options": texts}))
                 else:
@@ -65,7 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             elif (action == "answer") and not self.singleChoice:
                 index = int(text_data_json['index'])
                 data = shared_pipeline.processTrainingAction(
-                    self.question, index)
+                    self.lastQReported, self.alternative_responses, index)
                 if data is not None:
                     await database_sync_to_async(PreTrainingData.objects.create)(**data)
                     await self.send(text_data=get_message(f"Added to pre-screened training data", extra={"status": True}))
