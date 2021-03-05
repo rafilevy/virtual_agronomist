@@ -111,14 +111,27 @@ class DPRTrainingSet:
 
         # self.printSet()
 
-    def generateJSON(self, saveFile):
+    def generateJSON(self, trainSaveFile, devSaveFile):
         bigList = []
         for i in self.trainingSet:
             bigList.append(i.dict_DPR)
 
-        items = [json.dumps(dataPoint, indent=6) for dataPoint in bigList]
-        textOutput = "[%s]" % ",\n".join(items)
-        open(saveFile, 'w').write(textOutput)
+        devList = []
+        for i in range(0,len(bigList)//10):
+            r=random.randint(0,len(bigList)-1)
+            if bigList[r] not in devList:
+                devList.append(bigList[r])
+
+        for doc in devList:
+            bigList.remove(doc)
+
+        devItems = [json.dumps(dataPoint, indent=6) for dataPoint in devList]
+        devTextOutput = "[%s]" % ",\n".join(devItems)
+        open(devSaveFile,'w').write(devTextOutput)
+
+        trainItems = [json.dumps(dataPoint, indent=6) for dataPoint in bigList]
+        trainTextOutput = "[%s]" % ",\n".join(trainItems)
+        open(trainSaveFile, 'w').write(trainTextOutput)
 
     def printSet(self):
         for i in range(0, len(self.trainingSet)):

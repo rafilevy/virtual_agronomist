@@ -181,12 +181,15 @@ class MLPipeline:
                 return responses
 
     def report(self, question):
+        print("Question reported:")
         if self.trainer is None:
+            print("Trainer is missing!")
             return []
         return self.trainer.processQuestion(question)
 
     def processTrainingAction(self, question, correct_num):
         if self.trainer is None:
+            print("Trainer is missing!")
             return 0
         return self.trainer.processTrainingAction(question, correct_num)
 
