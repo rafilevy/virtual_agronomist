@@ -111,13 +111,15 @@ class DPRTrainingManager:
         # subdirectory of doc_dir where trainingsets arguments
         trainingDataLoc = "trainingSets/generated/"
 
-        saveFileName = doc_dir + trainingDataLoc + str(self.round) + ".json"
+        trainSaveFileName = doc_dir + trainingDataLoc + str(self.round) + ".json"
+        devSaveFileNames = doc_dir + trainingDataLoc + str(self.round) + "DEV.json"
 
         trainingSet.addInBatchNegatives()
-        trainingSet.generateJSON(saveFileName)
+        trainingSet.generateJSON(trainSaveFileName,devSaveFileNames)
 
         train_filename = trainingDataLoc + str(self.round) + ".json"
-        dev_filename = "trainingSets/validationSet.json"
+        dev_filename = trainingDataLoc + str(self.round) + "DEV.json"
+        test_filename = "trainingSets/validationSet.json"
         save_dir = "training/saved_models/dpr" + str(trainingSet.round)
 
         retreiver = DPRTrainingManager.get_current_retriever(
@@ -127,14 +129,12 @@ class DPRTrainingManager:
             data_dir=doc_dir,
             train_filename=train_filename,
             dev_filename=dev_filename,
-            test_filename=dev_filename,
+            test_filename=test_filename,
             n_epochs=1,
-            batch_size=4,
-            # batch_size=1,
-            grad_acc_steps=4,
+            batch_size=1,
+            grad_acc_steps=16,
             save_dir=save_dir,
-            evaluate_every=3000,
-            # evaluate_every=1,
+            evaluate_every=1000,
             embed_title=True,
             num_positives=1,
             num_hard_negatives=1
