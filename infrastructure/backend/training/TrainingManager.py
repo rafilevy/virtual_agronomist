@@ -161,27 +161,23 @@ class DPRTrainingManager:
         return ids
 
     def processQuestion(self, question):
-        if self.current_responses is not None:
-            return []
-
         k = 5
         retreiver = self.dpr_node.retriever
-        self.current_responses = retreiver.retrieve(question, top_k=k)
+        current_responses = retreiver.retrieve(question, top_k=k)
 
-        return [x.text for x in self.current_responses] + ["None of above"]
+        return current_responses
+        # return [x.text for x in self.current_responses] + ["None of above"]
 
-    def processTrainingAction(self, question, correct_num):
-        if correct_num < len(self.current_responses):
+    def processTrainingAction(self, question, choices, correct_num):
+        if correct_num < len(choices):
             user_data = {
                 "question": question,
-                "options": [x.text for x in self.current_responses],
+                "options": [x.text for x in choices],
                 "choice": correct_num,
             }
             meta_data = [{"text": x.text, "id": x.id}
-                         for x in self.current_responses]
-            self.current_responses = None
+                         for x in choices]
             return {"user_data": json.dumps(user_data), "meta_data": json.dumps(meta_data)}
-        self.current_responses = None
         return None
 
     def getCorrectDict(self, question, answer):

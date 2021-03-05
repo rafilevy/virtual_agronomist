@@ -187,11 +187,11 @@ class MLPipeline:
             return []
         return self.trainer.processQuestion(question)
 
-    def processTrainingAction(self, question, correct_num):
+    def processTrainingAction(self, question, choices, correct_num):
         if self.trainer is None:
             print("Trainer is missing!")
             return 0
-        return self.trainer.processTrainingAction(question, correct_num)
+        return self.trainer.processTrainingAction(question, choices, correct_num)
 
 
 shared_pipeline = MLPipeline()
