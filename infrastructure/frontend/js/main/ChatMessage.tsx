@@ -31,7 +31,7 @@ export default function ChatMessage({msg, onReport, onCheck, latest} : {msg: mes
                     {msg.from ? "Virtual Agronomist" : "You"} - {msg.time.toLocaleTimeString().substr(0,5)}
                 </Typography>
                 <Typography variant="body1">
-                    {msg.text}
+                    {msg.text.split("\n").join("<br />")}
                 </Typography>
             </div>
             {latest && msg.canReport && 
