@@ -62,17 +62,18 @@ class KeywordExtractor:
             lines = len(data)
 
         for line in data:
-            cat = line[0]
+            cat = line[0].lower()
             que = line[1]
             values = line[2:]
-            if verbose:
-                print("Category: ", cat, "\nQuestion: ", que, "\nValues: ", values)
 
             set_data = set()
             for ws in values:
-                set_data.add(ws)
+                set_data.add(ws.lower())
 
             completes = list(set_data)
+
+            if verbose:
+                print("Category: ", cat, "\nQuestion: ", que, "\nValues: ", completes)
 
             one_grams = set({})
             for value in values:
@@ -155,5 +156,4 @@ class KeywordExtractor:
                         d = self.reduce_run(reduced_run, completes)
                         self.merge_dicts(diction, d)
                     return diction
-
 
