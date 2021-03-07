@@ -14,6 +14,9 @@ django_asgi_app = get_asgi_application()
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from chatapp.consumers import ChatConsumer
+from chatapp.pipeline import shared_pipeline
+
+shared_pipeline.setup()
 
 application = URLRouter([
     path('ws/chat/', AuthMiddlewareStack(ChatConsumer.as_asgi())),

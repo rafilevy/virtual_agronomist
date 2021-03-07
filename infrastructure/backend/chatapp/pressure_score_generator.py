@@ -45,7 +45,7 @@ class PressureScoreGenerator:
 
             for key in self.pressure_table[crop].keys():
                 message = "Please choose the " + key + \
-                    " which best describes your current case:\n\n"
+                    " which best describes your current case:"
                 options = [self.pressure_table[crop][key][option][0]
                            for option in self.pressure_table[crop][key]]
                 if message in history:
@@ -73,4 +73,4 @@ class PressureScoreGenerator:
                   ".\nThis means that the disease pressure is " + pressure_level + ".")
             return (pressure_level, text)
         else:
-            return -1
+            return ("","")

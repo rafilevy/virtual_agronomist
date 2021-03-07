@@ -26,10 +26,18 @@ class TimingTranslator:
         print(type(self.crops_timing_lists))
         if crop in self.crops_timing_lists.keys():
             for timing in self.crops_timing_lists[crop]:
-              for name in timing:
-                if name in text and not name == timing[0]:
-                  text = text.replace(name, timing[0])
+                for name in timing:
+                    if name in text and not name == timing[0]:
+                        text = text.replace(name, timing[0])
         return text
+
+    def contains_translatable_timing(self,text):
+        for crop in self.crops_timing_lists.keys():
+            for timing in self.crops_timing_lists[crop]:
+                for name in timing:
+                    if name in text and not name == timing[0]:
+                        return True
+        return False
 
 
 class TimingInfoCreator:
