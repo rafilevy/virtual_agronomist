@@ -38,7 +38,7 @@ class MLPipeline:
 
         processor = preprocessor.preprocessor.PreProcessor(
             clean_empty_lines=True,
-            clean_whitespace=True,
+            clean_whitespace=False,
             clean_header_footer=True,
             split_by="passage",
             split_length=1,
@@ -181,15 +181,17 @@ class MLPipeline:
                 return responses
 
     def report(self, question):
+        print("Question reported:")
         if self.trainer is None:
+            print("Trainer is missing!")
             return []
         return self.trainer.processQuestion(question)
 
-    def processTrainingAction(self, question, correct_num):
+    def processTrainingAction(self, question, choices, correct_num):
         if self.trainer is None:
+            print("Trainer is missing!")
             return 0
-        return self.trainer.processTrainingAction(question, correct_num)
+        return self.trainer.processTrainingAction(question, choices, correct_num)
 
 
 shared_pipeline = MLPipeline()
-shared_pipeline.setup()

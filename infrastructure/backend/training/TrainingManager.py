@@ -111,13 +111,15 @@ class DPRTrainingManager:
         # subdirectory of doc_dir where trainingsets arguments
         trainingDataLoc = "trainingSets/generated/"
 
-        saveFileName = doc_dir + trainingDataLoc + str(self.round) + ".json"
+        trainSaveFileName = doc_dir + trainingDataLoc + str(self.round) + ".json"
+        devSaveFileNames = doc_dir + trainingDataLoc + str(self.round) + "DEV.json"
 
         trainingSet.addInBatchNegatives()
-        trainingSet.generateJSON(saveFileName)
+        trainingSet.generateJSON(trainSaveFileName,devSaveFileNames)
 
         train_filename = trainingDataLoc + str(self.round) + ".json"
-        dev_filename = "trainingSets/validationSet.json"
+        dev_filename = trainingDataLoc + str(self.round) + "DEV.json"
+        test_filename = "trainingSets/validationSet.json"
         save_dir = "training/saved_models/dpr" + str(trainingSet.round)
 
         retreiver = DPRTrainingManager.get_current_retriever(
@@ -127,14 +129,12 @@ class DPRTrainingManager:
             data_dir=doc_dir,
             train_filename=train_filename,
             dev_filename=dev_filename,
-            test_filename=dev_filename,
+            test_filename=test_filename,
             n_epochs=1,
-            batch_size=4,
-            # batch_size=1,
-            grad_acc_steps=4,
+            batch_size=1,
+            grad_acc_steps=16,
             save_dir=save_dir,
-            evaluate_every=3000,
-            # evaluate_every=1,
+            evaluate_every=1000,
             embed_title=True,
             num_positives=1,
             num_hard_negatives=1
@@ -161,27 +161,23 @@ class DPRTrainingManager:
         return ids
 
     def processQuestion(self, question):
-        if self.current_responses is not None:
-            return []
-
         k = 5
         retreiver = self.dpr_node.retriever
-        self.current_responses = retreiver.retrieve(question, top_k=k)
+        current_responses = retreiver.retrieve(question, top_k=k)
 
-        return [x.text for x in self.current_responses] + ["None of above"]
+        return current_responses
+        # return [x.text for x in self.current_responses] + ["None of above"]
 
-    def processTrainingAction(self, question, correct_num):
-        if correct_num < len(self.current_responses):
+    def processTrainingAction(self, question, choices, correct_num):
+        if correct_num < len(choices):
             user_data = {
                 "question": question,
-                "options": [x.text for x in self.current_responses],
+                "options": [x.text for x in choices],
                 "choice": correct_num,
             }
             meta_data = [{"text": x.text, "id": x.id}
-                         for x in self.current_responses]
-            self.current_responses = None
+                         for x in choices]
             return {"user_data": json.dumps(user_data), "meta_data": json.dumps(meta_data)}
-        self.current_responses = None
         return None
 
     def getCorrectDict(self, question, answer):

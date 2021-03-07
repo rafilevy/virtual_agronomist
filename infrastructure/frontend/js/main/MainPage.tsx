@@ -60,7 +60,7 @@ function MainPage() {
         }
         return undefined;
     }, [lastMessage]);
-    
+
     const [messages, setMessages] = React.useState<message[]>([]);
     const [questionText, setQuestionText] = React.useState("");
     const [lockInput, setLockInput] = React.useState(false);
@@ -69,7 +69,7 @@ function MainPage() {
     const textArea = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(()=> {
-        if (messageContainer.current) 
+        if (messageContainer.current)
             messageContainer.current.scrollTop = messageContainer.current.scrollHeight;
         if (textArea.current)
             textArea.current.focus();
@@ -113,7 +113,7 @@ function MainPage() {
     const sendCorrect = React.useCallback(() => {
         sendJsonMessage({ action: "correct"});
     }, [sendJsonMessage]);
-    
+
     const sendReport = React.useCallback(() => {
         sendJsonMessage({ action: "report"});
     }, [sendJsonMessage]);
@@ -128,7 +128,7 @@ function MainPage() {
                 {
                     messages.map((msg: message, i: number)=> {
                         const latest = i == messages.length - 1;
-                        if (msg.options) return <MultiMessage key={i} msg={msg} onChosenOption={sendCorrectAnswer}></MultiMessage>;
+                        if (msg.options) return <MultiMessage key={i} msg={msg} onChosenOption={sendCorrectAnswer} latest={latest}></MultiMessage>;
                         else if (msg.status) return <StatusMessage key={i} msg={msg}></StatusMessage>;
                         return <ChatMessage key={i} msg={msg} onReport={sendReport} onCheck={sendCorrect} latest={latest}></ChatMessage>;
                     })

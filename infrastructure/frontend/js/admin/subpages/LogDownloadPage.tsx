@@ -12,10 +12,8 @@ export default function LogDownloadPage() {
         <div>
             <CssBaseline />
             <Typography paragraph>
-                <Typography variant="h1">
-                    Download logs
-                </Typography>
                 <Button
+                    href="http://localhost:8000/logs"
                     variant="contained"
                     color="primary"
                     startIcon={<AttachmentIcon />}

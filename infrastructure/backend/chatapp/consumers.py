@@ -49,9 +49,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if (action == "report"):
                 self.singleChoice = False
                 await self.send(text_data=get_message(f"Question Reported", extra={"status": True}))
-                texts = shared_pipeline.report(self.question)
+                self.lastQReported = self.question
+                self.alternative_responses = shared_pipeline.report(self.question)
+                texts = [x.text for x in self.alternative_responses] + ["None of above"]
                 if texts:
-                    await self.send(text_data=get_message("", extra={"options": texts}))
+                    await self.send(text_data=get_message("please select the best response", extra={"options": texts}))
                 else:
                     await self.send(text_data=get_message(f"Couldn't get alternative answers", extra={"status": True}))
                 return
@@ -65,7 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             elif (action == "answer") and not self.singleChoice:
                 index = int(text_data_json['index'])
                 data = shared_pipeline.processTrainingAction(
-                    self.question, index)
+                    self.lastQReported, self.alternative_responses, index)
                 if data is not None:
                     await database_sync_to_async(PreTrainingData.objects.create)(**data)
                     await self.send(text_data=get_message(f"Added to pre-screened training data", extra={"status": True}))
@@ -99,7 +101,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except ChoiceRequiredException as e:
             self.furtherQuestion = e.message
             self.singleChoice = True
-            await self.send(text_data=get_message("", extra={"options": e.options}))
+            await self.send(text_data=get_message(e.message, extra={"options": e.options}))
         # except Exception as e:
         #     print("Error processing message")
         #     print(str(e))

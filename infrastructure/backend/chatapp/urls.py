@@ -4,7 +4,7 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter
 
 should_exempt_csrf = csrf_exempt if settings.DEBUG else (lambda a: a)
-from .views import index, insights, TrainView, FeedbackView, DataUpdateView, TableListView, DocumentListView, ReLoadDocumentsView
+from .views import index, insights, TrainView, FeedbackView, DataUpdateView, TableListView, DocumentListView, ReLoadDocumentsView, LogView, UsageView
 
 
 router = DefaultRouter()
@@ -16,7 +16,8 @@ urlpatterns = [
     path('', index, name='index'),
     path('insights/', insights, name='insights'),
     path('train/', should_exempt_csrf(TrainView.as_view()), name="train_view"),
-    path('reload/', should_exempt_csrf(TrainView.as_view()), name="train_view"),
+    path('logs/', should_exempt_csrf(LogView.as_view()), name="logs_view"),
+    path('usage/', should_exempt_csrf(UsageView.as_view()), name="usage_view"),
     path('feedback/', should_exempt_csrf(FeedbackView.as_view()),
          name="feedback_view"),
     path('data/config/', should_exempt_csrf(DataUpdateView.as_view()),
