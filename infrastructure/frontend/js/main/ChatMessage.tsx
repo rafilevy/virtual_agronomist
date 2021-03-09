@@ -23,7 +23,7 @@ const useStyles = makeStyles({
 
 export default function ChatMessage({msg, onReport, onCheck, latest} : {msg: message, onReport?: () => void, onCheck?: () => void, latest: boolean}) {
     const classes = useStyles();
-
+    const lined = msg.text.split("\n");
     return (
         <Paper className={[classes.container, msg.from ? classes.msg_left : classes.msg_right].join(" ")}>
             <div className={classes.message}>
@@ -31,7 +31,12 @@ export default function ChatMessage({msg, onReport, onCheck, latest} : {msg: mes
                     {msg.from ? "Virtual Agronomist" : "You"} - {msg.time.toLocaleTimeString().substr(0,5)}
                 </Typography>
                 <Typography variant="body1">
-                    {msg.text.split("\n").join("<br />")}
+                    {lined.map((val, idx) => (
+                        <>
+                            {val}
+                            {idx > 0 && idx < lined.length - 1 && <br />}
+                        </>
+                    ))}
                 </Typography>
             </div>
             {latest && msg.canReport && 
