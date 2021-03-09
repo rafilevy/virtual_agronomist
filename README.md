@@ -4,8 +4,9 @@ This project is a chat app that can be used to answer agricultural questions - i
 
 It uses Haystack (https://haystack.deepset.ai/) as its base with some extensions that allow the system to ask the user more questions.
 
-To run everything clone the repository and follow the instructions below in “How to deploy”
-How to deploy
+To run everything clone the repository and follow the instructions below
+
+## How to deploy
 Navigate to /infrastructure and run the following commands.
 
 ### First time using:
@@ -30,8 +31,9 @@ Navigate to /infrastructure and run the following commands.
    
 -   The front end should be at localhost:8000. The admin page is at /insights and will require you to login using the account you created earlier
 
--   After the first setup you can start it with:\
+### After the first setup :
+-   You can start it with:\
 	`docker-compose up -d elasticsearch`\
 	then wait about 5 seconds...\
 	`docker-compose up`\
-	The script local.sh does this for you\
+	The script `local.sh` does this for you\
