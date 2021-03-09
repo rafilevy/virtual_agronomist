@@ -1,51 +1,31 @@
-# Agronomist
+# Infrastructure
 
-## About
+The `docker-compose` file outlines the different containers used to bring the project together. Note this is for development use only, though a production configuration exists for the backend container.
 
-This was made using the vintasoftware/django-react-boilerplate template - adapted webpack configuration to use typescript. - added Django Channels and runs of Uvicorn instead
+## Frontend
+The frontend container will watch for changes in the `./frontend` folder, recompile and hot-reload code being served at localhost:3000.
 
-## Running
+## Backend
 
-### First time using:
--   build the backend:\
-    `docker-compose build backend`
--   start postgres and elastisearch container:\
-    `docker-compose up postgres`\
-    `docker-compose up elasticsearch`
--   add the faiss database:\
-    `docker exec -it infrastructure_postgres_1 psql -U fUclnecXsZRakPNYtEGKphYeqoKMgatR -d agronomist`\
-    in the prompt enter: `create database faiss;`\
-    press CTRL-D to close that
--   Sort out the django migration stuff:\
-    `docker-compose run --rm backend python manage.py makemigrations`\
-    `docker-compose run --rm backend python manage.py migrate`
--   Create a user for you to login:\
-    `docker-compose run --rm backend python manage.py createsuperuser`\
-    enter an email and password when prompted
+The backend container is built from `./backend ` folder and starts a Django web app using Uvicorn to allow for web-socket connections as well as http ones.
 
--   Everything should now work! Start it all up \
-    `docker-compose up`
-   
--   The front end should be at localhost:8000. The admin page is at /insights
+`/chatapp` contains the Django app where most logic resides (which should in future be refactored).
 
--   After the first setup you can start it with:\
-    `docker-compose up -d elasticsearch`\
-    then wait about 5 seconds...\
-    `docker-compose up`
+This is in part because we have decided to have the chat handling system as well as the ML pipeline live on the same machine while this would be unfeasible in a production setup.
 
-### Setup
+Recommendation would be to use a combination Celery workers to handle the shared_pipeline, and async functions with Django Channels to be able to handle other chat communications while pipeline results are waited on.
+However care would need to be taken when updating the document store with potentially multiple pipelines alive.
 
--   Create the migrations: 
-    `docker-compose run --rm backend python manage.py makemigrations`
--   Run the migrations:
-    `docker-compose run --rm backend python manage.py migrate`
--   Can also be run by exec'ing into the backend container
+- `url.py` dictates the HTTP urls that the application responds to.
 
--   Open a command line window and go to the project's directory.
--   `docker-compose up -d`
-    To access the logs for each service run `docker-compose logs -f service_name` (either backend, frontend, etc)
+- `views.py` specifies the HTTP api that the applications exposes as well the endpoints to serve up the chat app and admin static index files.
 
-### Adding packages
+- `models.py` specifies the PreTrainingData model that allows for persistence of training data. Care should be taken that the persisted data will be obsolete if the document store is reloaded (i.e. has new IDs). It also specifies the `RequestRecord` model for logging completed requests made to the system.
 
--   To install a new npm package you can create a bash session inside the running `frontend` container: `docker exec -it container_name bash`
--   To install a new PyPi package you will have to update the `requirements.in` file and rebuild the `backend` container.
+- `/users` contains a custom User model if in future different data is wanted to be collected.
+
+- The rest of the top level folders are boilerplate Django (unless specified elsewhere in the documentation). However notably `agronomist/urls.py` is the initial entry-point for the urls that the web app serves. 
+
+- `asgi.py` includes the Django Channels configuration code to allow the `chatapp/consumers.py` to handle websocket connections at the path `/ws/chat/`.
+
+- `js-build` is meant for production builds of the React app - there is a corresponding webpack configuration file in the frontend folder.
