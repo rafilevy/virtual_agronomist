@@ -31,8 +31,10 @@ class FurtherQuestionGenerator:
 
     def setup_timing_translator(self):
         self.timing_info_creator = TimingInfoCreator({})
-        self.timing_info_creator.read_csv_translate_table("knowledgeBase/translation.csv")
-        self.timing_translator = TimingTranslator(self.timing_info_creator.crops_timing_data)
+        self.timing_info_creator.read_csv_translate_table(
+            "knowledgeBase/translation.csv")
+        self.timing_translator = TimingTranslator(
+            self.timing_info_creator.crops_timing_data)
 
     def setup_keyword_extractor(self):
         key_word_extractor = KeywordExtractor()
@@ -46,14 +48,17 @@ class FurtherQuestionGenerator:
 
     def question_parsing(self, text):
         keywords = self.key_word_extractor.get_best_matches(text)
-        translatable = self.timing_translator.contains_translatable_timing(text)
+        translatable = self.timing_translator.contains_translatable_timing(
+            text)
         if translatable:
-            if "Crop" not in keywords and self.questions["Crop"] + "(If not, please reply No) " not in self.history:
-                raise ResponseRequiredException(self.questions["Crop"] + "(If not, please reply No) ")
-            elif "Crop" not in keywords:
-                crop = self.history[self.questions["Crop"] + "(If not, please reply No) "]
+            if "crop" not in keywords and self.questions["crop"] + "(If not, please reply No) " not in self.history:
+                raise ResponseRequiredException(
+                    self.questions["crop"] + "(If not, please reply No) ")
+            elif "crop" not in keywords:
+                crop = self.history[self.questions["crop"] +
+                                    "(If not, please reply No) "]
             else:
-                crop = keywords["Crop"][0]
+                crop = keywords["crop"][0]
 
         parsed = self.parser.parse(text)
         parsed_string = ""
@@ -62,7 +67,8 @@ class FurtherQuestionGenerator:
         parsed_string = re.sub("[\(\[].*?[\)\]]", "", parsed_string)
         parsed_string = re.sub("  ", " ", parsed_string)
         if translatable:
-            parsed_string = self.timing_translator.translate(parsed_string,crop)
+            parsed_string = self.timing_translator.translate(
+                parsed_string, crop)
             return crop + " " + parsed_string
         return parsed_string
 
@@ -121,14 +127,14 @@ class FurtherQuestionGenerator:
 
     def filters_difference(self, filters_list, specified=[]):
         current_filters = {}
-        print("\n\n",filters_list)
+        print("\n\n", filters_list)
         for filters in filters_list:
             for category, filters in filters.items():
                 if ((category not in specified) and (category in current_filters) and (filters != current_filters[category])):
                     return category
                 elif ((category not in specified) and (category not in current_filters)):
                     current_filters[category] = filters
-        print(current_filters,"\n\n")
+        print(current_filters, "\n\n")
         return None
 
     def furtherQuestions(self, docs, specified=[], original_filters={}):
@@ -143,14 +149,14 @@ class FurtherQuestionGenerator:
             for keyword, new_key in original_filters.items():
                 if len(new_key) > 0:
                     temp_d = [doc for i, doc in enumerate(docs) if not (
-                    (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
+                        (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
                     temp_f = [filters for i, filters in enumerate(filters_list) if not (
-                    (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
+                        (keyword in filters_list[i].keys()) and (new_key[0].lower() not in filters_list[i][keyword]))]
             if temp_d and temp_f:
                 docs = temp_d.copy()
                 filters_list = temp_f.copy()
         # print(len(docs),len(filters_list))
-        for pair in zip(docs,filters_list):
+        for pair in zip(docs, filters_list):
             print(pair[0].text)
             print(pair[1])
 
@@ -159,9 +165,9 @@ class FurtherQuestionGenerator:
         for keyword, new_key in original_filters.items():
             if len(new_key) > 0:
                 match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (new_key[0].lower(
-            ) in filters_list[i][keyword])) else match[i] for i in range(len(filters_list))]
+                ) in filters_list[i][keyword])) else match[i] for i in range(len(filters_list))]
                 match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (filters_list[i][keyword] == [
-                                      new_key[0].lower()])) else match[i] for i in range(len(filters_list))]
+                    new_key[0].lower()])) else match[i] for i in range(len(filters_list))]
 
         # Use only questions from the top 10 results. Otherwise too many questions asked.
         docs = [x for _, x in sorted(
@@ -188,7 +194,7 @@ class FurtherQuestionGenerator:
                     #filters_list = temp_f
                     #match = temp_m
 
-                    #print(len(doc),len(filters_list),len(match))
+                    # print(len(doc),len(filters_list),len(match))
 
                     match = [match[i] + 1 if ((keyword in filters_list[i].keys()) and (new_key.lower(
                     ) in filters_list[i][keyword])) else match[i] for i in range(len(filters_list))]
@@ -215,9 +221,9 @@ class FurtherQuestionGenerator:
             contained_pressure = True
         print(contained_pressure)
         pressure_result = ""
-        if contained_pressure and "Crop" in original_filters:
+        if contained_pressure and "crop" in original_filters:
             pr = self.pressure_score_generator.calculate_pressure_score(
-                original_filters["Crop"][0], self.history)
+                original_filters["crop"][0], self.history)
             print(pr)
             pressure_level = pr[0]
             text = pr[1]
