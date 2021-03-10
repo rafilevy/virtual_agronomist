@@ -33,3 +33,4 @@ __pycache__/
 */backend/training/saved_models/
 */backend/training/data/trainingSets/generated/
 
+documentStore/knowledgeBase
