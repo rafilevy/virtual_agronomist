@@ -43,7 +43,7 @@ Navigate to /infrastructure and run the following commands.
 Logs include timestamps, questions and given answers. Logs are committed to the database every time a user completes a question answer cycle with the system.
 A complete log file can be downloaded from the admin page.
 
-## File Uploads and formatting
+## File Uploads and Formatting
 
 In the admin page, files can be uploaded to add information into the knowledge base or to configure the keyword extraction, timing translation and pressure score calculation. The format requirements for the files are as following:
 
