@@ -47,21 +47,19 @@ A complete log file can be downloaded from the admin page.
 
 In the admin page, files can be uploaded to add information into the knowledge base or to configure the keyword extraction, timing translation and pressure score calculation. The format requirements for the files are as following:
 
-### Text-based documents
+### Text-based Documents
 
 Any new text-based document should be reformatted such that each paragraph contains one knowledge point and is phrased independently with no reference to other paragraphs or contexts. The more relevant keywords mentioned, the better the document is defined and it will improve the accuracy when related questions are asked. 
 For example, it is useful to explicitly mention if any specific fungicide is relevant to the discussion, or the timing currency in discussion. Mentioning key things defined in the categories.csv(refer to file format below) file will improve the accuracy in sensing the context of the paragraph.
 
 This file should be a `.txt` file with the name describing the contents. Explicit mentioning of a crop name is preferred as it will provide a clearer definition for the information. For example, the name of the file can be `Winter Wheat Fungicide.txt`.
 
-### table-based documents
+### Table Documents
 
-Any table based document should be a pair of .csv and .txt files with the same file name and describes information from one single table. Each entry in the csv should describe one row/column in the table.
-For example, the following table can be represented by the csv entries below:
+Any table based document should be a pair of `.csv` and `.txt` files with the same file name and describes information from one single table. Each entry in the csv should describe one row/column in the table.
+The associated `.txt` file should contain the description of the table.
 
-The associated .txt file should contain the description of the table. Following the example above, the .txt file can be:
-
-The more specific the description, the more accurate it will be when a question about the table is asked. The connection between the description and the actual table is detected by the shared filename, but the filename itself does not matter. For example, table1.csv and table1.txt works just fine as valid filename and there is no difference if the pair is renamed to components.csv and components.txt.
+The more specific the description, the more accurate it will be when a question about the table is asked. The connection between the description and the actual table is detected by the shared filename, but the filename itself does not matter. For example, `table1.csv` and `table1.txt` works just fine as valid filename and there is no difference if the pair is renamed to `components.csv` and `components.txt`.
 
 ### Keyword Extractor - `categories.csv`
 
