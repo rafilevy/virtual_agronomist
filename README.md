@@ -89,35 +89,27 @@ Categories may be added by adding a new row with the required information.
 The timing translator is used to standardise crop timing names. It does this by grouping equivalent timing names together, within each crop. The translation.csv file is comma-separated. For each crop’s translation table, multiple rows are used. The information for each crop is:
 -   1 unique Crop Name
 -   1 or more lists of equivalent timings
-⋅⋅⋅The first name should be unique within this crop
-⋅⋅⋅Each timing name is separated by a comma
+	-   The first name should be unique within this crop
+	-   Each timing name is separated by a comma
 -   1 or more values for this category - (e.g. spring wheat| winter wheat| spring beans)
 
 Each crop’s translation table is therefore represented by 2 or more lines. Translation tables should be separated by a blank line. Below is an example of timing tables for winter wheat and spring wheat.
 
-`Winter Wheat`
+```
+Winter Wheat
+T0, leaf 4
+T1, leaf 3
+T1.5, leaf 2
+T2, flag leaf
+T3, ear
+T4, second ear
 
-`T0, leaf 4`
-
-`T1, leaf 3`
-
-`T1.5, leaf 2`
-
-`T2, flag leaf`
-
-`T3, ear`
-
-`T4, second ear`
-
-`Spring Wheat`
-
-`T0`
-
-`T1`
-
-`T2`
-
-`T3`
+Spring Wheat
+T0
+T1
+T2
+T3
+```
 
 This extract shows a sample translation table for winter wheat. This translation table will standardise leaf 4 to T0 if the crop is known to be winter wheat. There can be more than one translation per line, for example replacing line 2 with T0, leaf 4, leaf four would lead to the translator standardising both leaf 4 and leaf four to T0. In the second table, no translations have been added.
 
@@ -133,17 +125,14 @@ Any question in the pressure score system is defined by multiple entries, each h
 
 Below is the example of a set of entries which forms a question for the pressure score calculation of winter wheat.
 
-`winter wheat,area in the country,East,1`
-
-`winter wheat,area in the country,North,2`
-
-`winter wheat,area in the country,South East,2`
-
-`winter wheat,area in the country,West,3`
-
-`winter wheat,area in the country,South,3`
-
-`winter wheat,area in the country,South West,4`
+```
+winter wheat,area in the country,East,1
+winter wheat,area in the country,North,2
+winter wheat,area in the country,South East,2
+winter wheat,area in the country,West,3
+winter wheat,area in the country,South,3
+winter wheat,area in the country,South West,4
+```
 
 When the pressure score calculator is triggered for a question on winter wheat, these entries will form a question about the location of the user in the country. If the user responds with the East option, the current pressure score will be increased by 1. If the response is West, the pressure score will be increased by 3.
 
