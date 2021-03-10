@@ -74,15 +74,13 @@ In addition, the keyword extractor can provide a generic question for each categ
 In order to allow questions to contain commas, the separating character for this file is a pipe symbol (| ). This should come immediately after the end of a value. There should be no separating character at the end of a line. There can be spaces before a new value. Category names and values can be input in uppercase or lowercase, but all output will be in lowercase only.
 Below is an example of some truncated rows of a `categories.csv` file.
 
-`Crop| Is there a specific crop that you would like to ask about?| spring wheat| winter wheat| winter barley`
-
-`Disease| Is there a specific disease that you would like to ask about?| ramularia| septoria| rust| yellow rust`
-
-`Fungicide| Do you want to check for a specific fungicide?| opus| bowman| cortez| rubric| epic| corral| amber`
-
-`Timing| Is there a specific timing that you would like to ask about? (E.g. T0,T1,etc)| t0| t1| t2| t3| t4`
-
-`Area| Which area are you in? (E.g. east/north/etc)| east| north| southeast| west| south| southwest`
+```
+Crop| Is there a specific crop that you would like to ask about?| spring wheat| winter wheat| winter barley
+Disease| Is there a specific disease that you would like to ask about?| ramularia| septoria| rust| yellow rust
+Fungicide| Do you want to check for a specific fungicide?| opus| bowman| cortez| rubric| epic| corral| amber
+Timing| Is there a specific timing that you would like to ask about? (E.g. T0,T1,etc)| t0| t1| t2| t3| t4
+Area| Which area are you in? (E.g. east/north/etc)| east| north| southeast| west| south| southwest
+```
 
 Categories may be added by adding a new row with the required information. 
 
@@ -91,8 +89,8 @@ Categories may be added by adding a new row with the required information.
 The timing translator is used to standardise crop timing names. It does this by grouping equivalent timing names together, within each crop. The translation.csv file is comma-separated. For each crop’s translation table, multiple rows are used. The information for each crop is:
 -   1 unique Crop Name
 -   1 or more lists of equivalent timings
---  The first name should be unique within this crop
---  Each timing name is separated by a comma
+⋅⋅⋅The first name should be unique within this crop
+⋅⋅⋅Each timing name is separated by a comma
 -   1 or more values for this category - (e.g. spring wheat| winter wheat| spring beans)
 
 Each crop’s translation table is therefore represented by 2 or more lines. Translation tables should be separated by a blank line. Below is an example of timing tables for winter wheat and spring wheat.
